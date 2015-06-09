@@ -1,0 +1,7 @@
+/Test
+*.suo
+/packages
+/PercolatorAnalysis/bin
+/PercolatorAnalysis/obj
+/PercolatorAnalysis/.svn
+/PAS_Generator/.svn

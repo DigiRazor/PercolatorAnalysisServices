@@ -1,0 +1,17 @@
+<#@ include file = "Include.ttinclude" #>
+<#
+	//Refer to the documentation file that comes with this package for information on this file.
+	//Settings =>
+    PercolatorGen.ConnectionString =			@"Provider=MSOLAP;Data Source=YOUR SERVER NAME HERE;Initial Catalog=YOUR CUBE DATABASE NAME HERE;User ID=FILL IN HERE; Password=FILL IN HERE";
+	PercolatorGen.ConfigFileName =				"";
+	PercolatorGen.DBName =						"";
+    PercolatorGen.Namespace =					"CubeModel";
+
+	//Visibility Switches
+	PercolatorGen.OnlyVisible_Dimensions =		true;
+	PercolatorGen.OnlyVisible_Hierarchies =		true;
+	PercolatorGen.OnlyVisible_Attributes =		true;
+	PercolatorGen.OnlyVisible_Measures =		true;
+
+#>
+<#@ include file = "Generator.ttinclude" #>
