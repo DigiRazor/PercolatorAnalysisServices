@@ -23,5 +23,6 @@ namespace Percolator.AnalysisServices
     {
         CellSet GetCellSet(string mdx);
         DataTable GetDataTable(string mdx);
+        AdomdDataReader GetReader(string mdx);
     }
 }

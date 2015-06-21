@@ -57,6 +57,12 @@ namespace Percolator.AnalysisServices
                 return command.ExecuteCellSet();
         }
 
+        public AdomdDataReader GetReader(string mdx)
+        {
+            using (var command = this.prepareCommand(mdx))
+                return command.ExecuteReader();
+        }
+
         public DataTable GetDataTable(string mdx)
         {
             using (var command = this.prepareCommand(mdx))

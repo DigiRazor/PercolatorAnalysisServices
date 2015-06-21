@@ -211,12 +211,14 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             var lator = new Percolator<T>(this._axisGroups, this._components);
             var command = lator.MdxCommand;
-            var cellSet = this._provider.GetCellSet(command);
-
+            //var cellSet = this._provider.GetCellSet(command);
+            var reader = this._provider.GetReader(command);
             if (clearQueryContents)
                 this.Clear();
 
-            return cellSet.FlattenAndReturn<T_MapTo>();
+            var mapper = new Mapperlator<T_MapTo>(reader);
+
+            return mapper;
         }
 
         public Member CreateMember(string name, Func<T, Member> memberCreator)

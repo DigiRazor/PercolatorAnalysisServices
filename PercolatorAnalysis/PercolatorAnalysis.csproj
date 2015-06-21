@@ -45,8 +45,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CoopDigityExtensions">
-      <HintPath>..\..\..\..\..\Common\Assemblies\CoopDigityExtensions 1.0.0\CoopDigityExtensions.dll</HintPath>
+    <Reference Include="CoopDigityExtensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0fce6c056fba8cb7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Common\Assemblies\CoopDigityExtensions 1.0.1\CoopDigityExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AnalysisServices.AdomdClient, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -73,6 +74,7 @@
     <Compile Include="Comments.cs" />
     <Compile Include="Flat.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Mapperlator.cs" />
     <Compile Include="MdxQueryObject.cs" />
     <Compile Include="Linq\Hierarchy.cs" />
     <Compile Include="ICubeObject.cs" />

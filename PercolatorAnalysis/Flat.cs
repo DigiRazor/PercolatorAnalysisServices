@@ -21,7 +21,7 @@ namespace Percolator.AnalysisServices
         public static IEnumerable<Flat> Flatten(CellSet cellSet)
         {
             List<string> valueMeasures = new List<string>();
-            var axes = cellSet.Axes.Cast<Axis>().ToList();
+            var axes = cellSet.Axes.Cast<Microsoft.AnalysisServices.AdomdClient.Axis>().ToList();
             var members = new List<MemberPair>();
                       
             for (int i = 0; i < cellSet.Axes.Count; i++)

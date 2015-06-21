@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Percolator.AnalysisServices.Attributes;
 using System.Linq.Expressions;
+using CoopDigity.Linq;
 
 namespace Percolator.AnalysisServices.Linq
 {
@@ -152,44 +153,21 @@ namespace Percolator.AnalysisServices.Linq
 
         protected string assembleSet()
         {
-            StringBuilder sb = new StringBuilder();
             if (this._values == null)
-                this._values = new List<object>(0);
+                return String.Empty;
+
+            StringBuilder sb = new StringBuilder();
+
             if (this._values.Count > 1)
                 sb.Append("{");
 
-            bool firstRun = true;
-            foreach (object obj in this._values)
-            {
-                if (obj is string || obj is int)
-                {
-                    if (firstRun)
-                        sb.Append(string.Format("{0}", obj));
-                    else
-                        sb.Append(string.Format(" * {0}", obj));
-                }
-
-                else if (obj is ICubeObject)
-                {
-                    if (firstRun)
-                        sb.Append(string.Format("{0}", obj));
-                    else
-                        sb.Append(string.Format(" * {0}", obj));
-                }
-
-                else
-                {
-                    if (firstRun)
-                        sb.Append(string.Format("{0}", obj));
-                    else
-                        sb.Append(string.Format(" * {0}", obj));
-                }
-
-                if (firstRun)
-                    firstRun = false;
-            }
+            this._values
+                .Aggregate((a, b) => String.Format("{0} * {1}"))
+                .To(sb.Append);
+            
             if (this._values.Count > 1)
                 sb.Append("}");
+            
             return sb.ToString();
         }
 

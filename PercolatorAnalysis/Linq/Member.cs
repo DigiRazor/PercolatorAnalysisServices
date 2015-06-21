@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using CoopDigity.Linq;
 
 namespace Percolator.AnalysisServices.Linq
 {
@@ -224,38 +225,12 @@ namespace Percolator.AnalysisServices.Linq
         {
             StringBuilder sb = new StringBuilder();
             if (this._values.Count > 1)
-                sb  .Append("(");
+                sb.Append("(");
 
-            bool firstRun = true;
-            foreach (object obj in this._values)
-            {
-                if (obj is string || obj is int)
-                {
-                    if (firstRun)
-                        sb.Append(string.Format("{0}", obj));
-                    else
-                        sb.Append(string.Format(" , {0}", obj));
-                }
+            this._values
+                .Aggregate((a, b) => String.Format("{0}, {1}", a, b))
+                .To(sb.Append);
 
-                else if (obj is ICubeObject)
-                {
-                    if (firstRun)
-                        sb.Append(string.Format("{0}", obj));
-                    else
-                        sb.Append(string.Format(" , {0}", obj));
-                }
-
-                else
-                {
-                    if (firstRun)
-                        sb.Append(string.Format("{0}", obj));
-                    else
-                        sb.Append(string.Format(" * {0}", obj));
-                }
-
-                if (firstRun)
-                    firstRun = false;
-            }
             if(this._values.Count > 1)
                 sb.Append(")");
             return sb.ToString();

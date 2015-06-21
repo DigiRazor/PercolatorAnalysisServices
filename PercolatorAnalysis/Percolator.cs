@@ -8,6 +8,7 @@ using System.Reflection;
 using Percolator.AnalysisServices.Attributes;
 using System.Collections;
 using Percolator.AnalysisServices.Linq;
+using CoopDigity.Linq;
 
 namespace Percolator.AnalysisServices
 {
@@ -195,14 +196,15 @@ namespace Percolator.AnalysisServices
 
             if (val is IEnumerable<ICubeObject>)
             {
-                var concact = ((IEnumerable<ICubeObject>)val).JoinWith(", ", true);
+                var concact = ((IEnumerable<ICubeObject>)val)
+                    .Select(x => x.ToString())
+                    .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+
                 if (currentSubcube != null)
                     currentSubcube.Value = concact;
                 else
-                {
-                    var subCubeTran = new Translation(this.getComponentValue(Component.SubCube), concact);
-                    this._translations.Add(subCubeTran);
-                }
+                    new Translation(this.getComponentValue(Component.SubCube), concact)
+                        .Finally(this._translations.Add);
             }
 
             else
@@ -210,10 +212,8 @@ namespace Percolator.AnalysisServices
                 if (currentSubcube != null)
                     currentSubcube.Value = val.ToString();
                 else
-                {
-                    var subCubeTran = new Translation(this.getComponentValue(Component.SubCube), val.ToString());
-                    this._translations.Add(subCubeTran);
-                }
+                    new Translation(this.getComponentValue(Component.SubCube), val.ToString())
+                        .Finally(this._translations.Add);
             }
         }
 
@@ -318,24 +318,12 @@ namespace Percolator.AnalysisServices
 
             sb.AppendLine(Comment.FOR_SELECT_REGION);
             sb.AppendLine("SELECT");
-            var firstAxis = true;
+
             this._axis
                 .OrderBy(x => x.AxisNumber)
-                .Iterate(x => 
-                    {
-                        var otherAxes = this._axis.Where(o => o.AxisNumber == x.AxisNumber);
-                        //otherAxes
-                        //    .Select(y => y.Creator)
-                        //    .Iterate(y => x.Combine(y));
-
-                        if (firstAxis)
-                        {
-                            sb.AppendLine(x);
-                            firstAxis = false;
-                        }
-                        else
-                            sb.AppendLine(",\r\n{0}", x);
-                    });
+                .Select(x => x.ToString())
+                .Aggregate((a, b) => String.Format("{0},\r\n{1}", a, b))
+                .To(sb.AppendLine);
 
             sb.AppendLine(Comment.FOR_FROM_REGION);
             var subCube = this._translations.FirstOrDefault(x => x.Type == Percolator<T>._SUBCUBE);
@@ -357,20 +345,14 @@ namespace Percolator.AnalysisServices
             {
                 sb.AppendLine(Comment.FOR_SLICER_REGION);
                 sb.AppendLine("WHERE\r\n(");
+
+                slicers
+               .Select(x => x.Value)
+               .Aggregate((a, b) => String.Format("{0},\r\n", a, b))
+               .To(sb.AppendLine)
+               .To(s => s.AppendLine(")"));
             }
-            firstAxis = true;
-            foreach(var slicer in slicers)
-            {
-                if (firstAxis)
-                {
-                    sb.AppendLine("\t{0}", slicer.Value);
-                    firstAxis = false;
-                }
-                else
-                    sb.AppendLine(",\t{0}", slicer.Value);
-            }
-            if (slicerCount > 0)
-                sb.AppendLine(")");
+
             return sb.ToString();
         }
     }

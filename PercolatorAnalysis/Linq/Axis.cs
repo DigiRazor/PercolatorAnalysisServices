@@ -37,7 +37,9 @@ namespace Percolator.AnalysisServices.Linq
             var obj = this.Creator.GetValue<T>();
             string str = string.Empty;
             if (obj is IEnumerable<ICubeObject>)
-                str = ((IEnumerable<ICubeObject>)obj).JoinWith(",\t", true);
+                str = ((IEnumerable<ICubeObject>)obj)
+                    .Select(c => c.ToString())
+                    .Aggregate((a, b) => String.Format("{0},\r\n\t", a, b));   //.JoinWith(",\t", true);
             else
                 str = obj == null ? null : obj.ToString();
             if (this.IsNonEmpty)
@@ -48,16 +50,16 @@ namespace Percolator.AnalysisServices.Linq
             if (this.WithMembers.Count > 0)
             {
                 if(str != null)
-                    sb.AppendLine(",\t{0}", this.WithMembers.JoinWith(",\t"));
+                    sb.AppendLine(",\t{0}", this.WithMembers.Aggregate((a, b) => String.Format("{0},\r\n\t{1}", a, b)));
                 else
-                    sb.AppendLine("\t{0}", this.WithMembers.JoinWith(",\t"));
+                    sb.AppendLine("\t{0}", this.WithMembers.Aggregate((a, b) => String.Format("{0},\r\n\t{1}", a, b)));
             }
             if (this.WithSets.Count > 0)
             {
                 if(str != null || this.WithMembers.Count > 0)
-                    sb.AppendLine("*\t{0}", this.WithSets.JoinWith("*\t"));
+                    sb.AppendLine("*\t{0}", this.WithSets.Aggregate((a, b) => String.Format("{0} *\r\n\t{1}", a, b)));
                 else
-                    sb.AppendLine("\t{0}", this.WithSets.JoinWith("*\t"));
+                    sb.AppendLine("\t{0}", this.WithSets.Aggregate((a, b) => String.Format("{0} *\r\n\t{1}", a, b)));
             }
             sb.Append("}")
                 .AppendFormat(" ON {0}", this.AxisNumber);
