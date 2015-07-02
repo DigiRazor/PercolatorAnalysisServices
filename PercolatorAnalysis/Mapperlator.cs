@@ -39,7 +39,7 @@ namespace Percolator.AnalysisServices
             AdomdDataReader _reader;
             Creatorlator _creator;
             TypeConverter[] _converters;
-            int[] _ordinals;
+            int[] _ornials;
 
             public T Current { get; private set; }
             object System.Collections.IEnumerator.Current { get { return this.Current; } }
@@ -66,8 +66,8 @@ namespace Percolator.AnalysisServices
             {
                 var rawValues = new string[this._reader.FieldCount];
                 
-                this._ordinals
-                    .For((v, i) => rawValues[i] = this._reader[v].ToString());
+                this._ornials
+                    .For((v, i) => rawValues[i] = this._reader[v] == null ? null : this._reader[v].ToString());
 
                 return this._creator(this._converters, rawValues);
             }
@@ -78,12 +78,11 @@ namespace Percolator.AnalysisServices
                 var schema = this._reader.GetSchemaTable();
                 var columnOrds = schema.Rows
                     .Cast<DataRow>()
-                    .Select(x =>  new
-                        {
-                            Name = x[0].ToString(),
-                            Ordinal = Convert.ToInt32(x[1])
-                        })
-                    .ToArray();
+                    .Select(x => new
+                    {
+                        Name = x[0].ToString().Replace("[", "").Replace("]", "").Split('.')[1],
+                        Ordianl = Convert.ToInt32(x[1])
+                    });
 
                 var props = type.GetProperties()
                     .Where(x => System.Attribute.IsDefined(x, typeof(MapToAttribute)))
@@ -92,11 +91,14 @@ namespace Percolator.AnalysisServices
                         Attribute = x.GetCustomAttribute<MapToAttribute>(),
                         PropertyInfo = x
                     })
-                    .Where(x => columnOrds.Select(n => n.Name)
-                            .Any(y => y.Contains(x.Attribute.MdxColumn)))
-                    .OrderBy(x => x.Attribute.MdxColumn);
+                    .Join(columnOrds, p => p.Attribute.MdxColumn, co => co.Name, (p, co) => new
+                    {
+                        Ordinal = co.Ordianl,
+                        Property = p
+                    })
+                    .OrderBy(x => x.Property.Attribute.MdxColumn);
 
-                this._ordinals = columnOrds.Select(x => x.Ordinal).ToArray();
+                this._ornials = props.Select(x => x.Ordinal).ToArray();
 
                 var bindingList = new Dictionary<ParameterExpression, MemberAssignment>();
                 this._converters = new TypeConverter[props.Count()];
@@ -106,7 +108,7 @@ namespace Percolator.AnalysisServices
 
                 props.For((v, i) =>
                 {
-                    var prop = v.PropertyInfo;
+                    var prop = v.Property.PropertyInfo;
                     var paramExp = Expression.Parameter(prop.PropertyType, prop.Name);
                     var arrayAssignment = Expression.ArrayIndex(stringArrayParam, Expression.Constant(i));
                     var typeConverter = TypeDescriptor.GetConverter(prop.PropertyType);
