@@ -35,17 +35,18 @@ namespace Percolator.AnalysisServices
         /// </summary>
         void openConnection()
         {
-            if (this._connection.State == ConnectionState.Closed)
+            if (this._connection != null)
             {
-                if (this._connection == null)
-                    this._connection = new AdomdConnection(CubeBase.ConnectionString);
-                this._connection.Open();
-            }
+                if (this._connection.State == ConnectionState.Closed)
+                {
+                    this._connection.Open();
+                }
 
-            else if (this._connection.State == ConnectionState.Broken)
-            {
-                this._connection.Close();
-                this._connection.Open();
+                else if (this._connection.State == ConnectionState.Broken)
+                {
+                    this._connection.Close();
+                    this._connection.Open();
+                }
             }
 
             else return;

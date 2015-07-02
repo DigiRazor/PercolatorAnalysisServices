@@ -76,35 +76,6 @@ namespace Percolator.AnalysisServices
             return source.AppendLine(string.Format(str, objs));
         }
 
-        //internal static string JoinWith<T>(this IEnumerable<T> source, string joinString, bool joinWithNewLine = false)
-        //{
-        //    using (var rator = source.GetEnumerator())
-        //    {
-        //        var firstRun = true;
-        //        var sb = new StringBuilder();
-        //        while (rator.MoveNext())
-        //        {
-        //            if (firstRun)
-        //            {
-        //                if (joinWithNewLine)
-        //                    sb.AppendLine(rator.Current.ToString());
-        //                else
-        //                    sb.Append(rator.Current.ToString());
-        //                firstRun = false;
-        //            }
-
-        //            else
-        //            {
-        //                if (joinWithNewLine)
-        //                    sb.AppendLine("{0}{1}", joinString, rator.Current.ToString());
-        //                else
-        //                    sb.AppendFormat("{0}{1}", joinString, rator.Current.ToString());
-        //            }
-        //        }
-        //        return sb.ToString();
-        //    }
-        //}
-
         internal static object GetValue<T>(this Expression expression)
         {
             if (expression == null)
@@ -114,7 +85,7 @@ namespace Percolator.AnalysisServices
             {
                 var instanceProp = typeof(T).GetProperties().FirstOrDefault(x => x.Name == "Instance");
                 if(instanceProp == null)
-                    throw new PercolatorException(string.Format("Cannot find the sigleton instance of '{0}'.", typeof(T).Name));
+                    throw new PercolatorException(string.Format("Cannot find the singleton instance of '{0}'.", typeof(T).Name));
                 var t = (T)instanceProp.GetValue(null);
                 var lambdaExp = (LambdaExpression)expression;
                 var lambda = Expression.Lambda<Func<T, object>>(lambdaExp.Body, lambdaExp.Parameters.FirstOrDefault());
@@ -200,7 +171,7 @@ namespace Percolator.AnalysisServices
                     .Select(x => new
                         {
                             Name = x.Key,
-                            Value = x.Value == null ? null : x.Value.ToString()// is string ? "" : "0" : x.Value.ToString() // TODO - Add null coallesce in the expression instead of doing this
+                            Value = x.Value == null ? null : x.Value.ToString()
                         })
                     .Concat(flat.PositionValues
                         .Select(x => new
@@ -208,9 +179,11 @@ namespace Percolator.AnalysisServices
                                 Name = x.Key,
                                 Value = x.Value
                             }))
-                    .OrderBy(x => x.Name);
+                    .OrderBy(x => x.Name)
+                    .Select(x => x.Value)
+                    .ToArray();
 
-                yield return creator(converterList, results.Select(x => x.Value).ToArray());
+                yield return creator(converterList, results);
             }
         }
 

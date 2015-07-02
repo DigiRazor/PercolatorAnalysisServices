@@ -20,7 +20,7 @@ namespace Percolator.AnalysisServices.Linq
 {
     using Percolator.AnalysisServices;
     using Percolator.AnalysisServices.Attributes;
-using Microsoft.AnalysisServices.AdomdClient;
+    using Microsoft.AnalysisServices.AdomdClient;
     using System.ComponentModel;
 
     /// <summary>
@@ -30,12 +30,14 @@ using Microsoft.AnalysisServices.AdomdClient;
     public class Cube<T> : IMdxQueryable<T>
     {
         IMdxProvider _provider;
-        Expression _expression;
         List<Axis<T>> _axisGroups;
         List<MdxComponent> _components;
         byte _createdDepth;
 
         public IMdxProvider Provider { get { return this._provider; } }
+
+        public Cube()
+            : this(null) { }
 
         /// <summary>
         /// Creates a new Cube to query against.
@@ -43,12 +45,8 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <param name="provider">The MdxProvider associated with this cube.</param>
         public Cube(IMdxProvider provider)
         {
-            if (provider == null)
-                throw new ArgumentNullException("provider");
-
             this._provider = provider;
             this._createdDepth = 0;
-            this._expression = Expression.Constant(this);
             this._axisGroups = new List<Axis<T>>();
             this._components = new List<MdxComponent>();
         }
@@ -209,16 +207,31 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <returns>An IEnumerable of the type specified.</returns>
         public IEnumerable<T_MapTo> Percolate<T_MapTo>(bool clearQueryContents = true) where T_MapTo : new()
         {
+            if (this._provider == null)
+                throw new NullReferenceException("The provider reference is null.  This is most likely due to using this cube without setting its provider either in this cube's constructor or property setting.");
+
             var lator = new Percolator<T>(this._axisGroups, this._components);
             var command = lator.MdxCommand;
-            //var cellSet = this._provider.GetCellSet(command);
-            var reader = this._provider.GetReader(command);
+            var totalAxis = this._axisGroups.Max(x => x.AxisNumber);
+
+            IEnumerable<T_MapTo> results = Enumerable.Empty<T_MapTo>();
+
+            if(totalAxis > 1)
+            {
+                var cellSet = this._provider.GetCellSet(command);
+                results = cellSet.FlattenAndReturn<T_MapTo>();
+            }
+            
+            else
+            {
+                var reader = this._provider.GetReader(command);
+                results = new Mapperlator<T_MapTo>(reader);
+            }
+            
             if (clearQueryContents)
                 this.Clear();
 
-            var mapper = new Mapperlator<T_MapTo>(reader);
-
-            return mapper;
+            return results;
         }
 
         public Member CreateMember(string name, Func<T, Member> memberCreator)
@@ -260,6 +273,15 @@ using Microsoft.AnalysisServices.AdomdClient;
         public string TranslateToMdx()
         {
             return new Percolator<T>(this._axisGroups, this._components).MdxCommand;
+        }
+
+        /// <summary>
+        /// Creates or renews the provider for this cube by using the new connection string passed in.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        public void SetProvider(string connectionString)
+        {
+            this._provider = new Providerlator(connectionString);
         }
 
         /// <summary>

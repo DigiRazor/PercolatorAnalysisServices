@@ -22,13 +22,32 @@ namespace Percolator.AnalysisServices
     /// </summary>
     public class CubeBase : IDisposable
     {
+        string _connectionString;
         /// <summary>
         /// The cube's IQueryProvider implementation.
         /// </summary>
         protected Providerlator _provider;
 
         public Providerlator Provider { get { return this._provider; } }
-        internal static string ConnectionString { get; set; }
+        public string ConnectionString 
+        { 
+            get
+            {
+                return this._connectionString;
+            }
+            set
+            {
+                if (this._connectionString != value)
+                {
+                    this._connectionString = value;
+                    this._provider = new Providerlator(value);
+                }
+
+                else if (this._provider == null)
+                    this._provider = new Providerlator(value);
+            }
+        }
+
         /// <summary>
         /// Instantiates new CubeBase as well as the provider and static connection string.
         /// </summary>
@@ -36,7 +55,7 @@ namespace Percolator.AnalysisServices
         public CubeBase(string connectionString)
         {
             this._provider = new Providerlator(connectionString);
-            CubeBase.ConnectionString = connectionString;
+            this.ConnectionString = connectionString;
         }
 
         /// <summary>
@@ -46,17 +65,7 @@ namespace Percolator.AnalysisServices
         /// <returns></returns>
         public DataTable Execute(string mdxQuery)
         {
-            using(AdomdConnection connection = new AdomdConnection(CubeBase.ConnectionString))
-            using(AdomdCommand command = new AdomdCommand(mdxQuery, connection))
-            {
-                connection.Open();
-                using(AdomdDataAdapter dapter = new AdomdDataAdapter(command))
-                {
-                    DataTable table = new DataTable(connection.Database);
-                    dapter.Fill(table);
-                    return table;
-                }
-            }
+            return this._provider.GetDataTable(mdxQuery);
         }
 
         /// <summary>
@@ -66,12 +75,7 @@ namespace Percolator.AnalysisServices
         /// <returns></returns>
         public CellSet ExecuteCellSet(string mdxQuery)
         {
-            using (AdomdConnection connection = new AdomdConnection(CubeBase.ConnectionString))
-            using (AdomdCommand command = new AdomdCommand(mdxQuery, connection))
-            {
-                connection.Open();
-                return command.ExecuteCellSet();
-            }
+            return this._provider.GetCellSet(mdxQuery);
         }
 
         /// <summary>

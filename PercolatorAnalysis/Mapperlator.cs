@@ -39,7 +39,7 @@ namespace Percolator.AnalysisServices
             AdomdDataReader _reader;
             Creatorlator _creator;
             TypeConverter[] _converters;
-            int[] _ordinals;
+            Dictionary<string, string> _ordinals;
 
             public T Current { get; private set; }
             object System.Collections.IEnumerator.Current { get { return this.Current; } }
@@ -65,9 +65,12 @@ namespace Percolator.AnalysisServices
             T get()
             {
                 var rawValues = new string[this._reader.FieldCount];
-                
-                this._ordinals
-                    .For((v, i) => rawValues[i] = this._reader[v].ToString());
+
+                this._ordinals.For((v, i) => 
+                    {
+                        var val = this._reader[v.Value];
+                        rawValues[i] = val == null ? null : val.ToString();
+                    });
 
                 return this._creator(this._converters, rawValues);
             }
@@ -78,11 +81,7 @@ namespace Percolator.AnalysisServices
                 var schema = this._reader.GetSchemaTable();
                 var columnOrds = schema.Rows
                     .Cast<DataRow>()
-                    .Select(x =>  new
-                        {
-                            Name = x[0].ToString(),
-                            Ordinal = Convert.ToInt32(x[1])
-                        })
+                    .Select(x =>  x[0].ToString())
                     .ToArray();
 
                 var props = type.GetProperties()
@@ -92,11 +91,20 @@ namespace Percolator.AnalysisServices
                         Attribute = x.GetCustomAttribute<MapToAttribute>(),
                         PropertyInfo = x
                     })
-                    .Where(x => columnOrds.Select(n => n.Name)
-                            .Any(y => y.Contains(x.Attribute.MdxColumn)))
+                    .Where(x => columnOrds.Any(y => y.Contains(String.Format("[{0}]", x.Attribute.MdxColumn))))
                     .OrderBy(x => x.Attribute.MdxColumn);
 
-                this._ordinals = columnOrds.Select(x => x.Ordinal).ToArray();
+                this._ordinals = columnOrds
+                    .SelectMany(x => props, (co, ps) => new
+                    {
+                        MemberCaption = co,
+                        ShortName = ps.Attribute.MdxColumn
+                    })
+                    .Where(x => x.MemberCaption.Contains(x.ShortName))
+                    .Distinct()
+                    .OrderBy(x => x.ShortName)
+                    .ToDictionary(k => k.ShortName, v => v.MemberCaption);
+
 
                 var bindingList = new Dictionary<ParameterExpression, MemberAssignment>();
                 this._converters = new TypeConverter[props.Count()];

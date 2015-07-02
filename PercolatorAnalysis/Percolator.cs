@@ -348,7 +348,7 @@ namespace Percolator.AnalysisServices
 
                 slicers
                .Select(x => x.Value)
-               .Aggregate((a, b) => String.Format("{0},\r\n", a, b))
+               .Aggregate((a, b) => String.Format("\t{0},\r\n\t{1}", a, b))
                .To(sb.AppendLine)
                .To(s => s.AppendLine(")"));
             }
