@@ -7,8 +7,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using CoopDigity.Linq;
 
 namespace Percolator.AnalysisServices
 {
@@ -287,6 +285,105 @@ namespace Percolator.AnalysisServices
 
             else
                 return null;
+        }
+
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            using (var rator = source.GetEnumerator())
+                while (rator.MoveNext())
+                    action(rator.Current);
+        }
+
+        public static void For<T>(this IEnumerable<T> source, Action<T, int> action)
+        {
+            var index = 0;
+            using (var rator = source.GetEnumerator())
+                while (rator.MoveNext())
+                    action(rator.Current, index++);
+        }
+
+        /// <summary>
+        /// Removes the occurance of the passed in string.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="removal"></param>
+        /// <returns></returns>
+        public static string Remove(this string source, params string[] removal)
+        {
+            var result = source;
+            foreach (var remove in removal)
+                result = result.Replace(remove, "");
+            return result;
+        }
+
+        public static Tout To<Tsource, Tout>(this Tsource source, Func<Tsource, Tout> function)
+        {
+            return function(source);
+        }
+
+        public static Tout To<Tsource, T1, Tout>(this Tsource source, T1 in1, Func<Tsource, T1, Tout> function)
+        {
+            return function(source, in1);
+        }
+
+        public static Tout To<Tsource, T1, T2, Tout>(this Tsource source, T1 in1, T2 in2, Func<Tsource, T1, T2, Tout> function)
+        {
+            return function(source, in1, in2);
+        }
+
+        public static Tout To<Tsource, T1, T2, T3, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, Func<Tsource, T1, T2, T3, Tout> function)
+        {
+            return function(source, in1, in2, in3);
+        }
+
+        public static Tout To<Tsource, T1, T2, T3, T4, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, Func<Tsource, T1, T2, T3, T4, Tout> function)
+        {
+            return function(source, in1, in2, in3, in4);
+        }
+
+        public static Tout To<Tsource, T1, T2, T3, T4, T5, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, Func<Tsource, T1, T2, T3, T4, T5, Tout> function)
+        {
+            return function(source, in1, in2, in3, in4, in5);
+        }
+
+        public static Tout To<Tsource, T1, T2, T3, T4, T5, T6, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, T6 in6, Func<Tsource, T1, T2, T3, T4, T5, T6, Tout> function)
+        {
+            return function(source, in1, in2, in3, in4, in5, in6);
+        }
+
+        public static void Finally<Tsource>(this Tsource source, Action<Tsource> action)
+        {
+            action(source);
+        }
+
+        public static void Finally<Tsource, T1>(this Tsource source, T1 in1, Action<Tsource, T1> action)
+        {
+            action(source, in1);
+        }
+
+        public static void Finally<Tsource, T1, T2>(this Tsource source, T1 in1, T2 in2, Action<Tsource, T1, T2> action)
+        {
+            action(source, in1, in2);
+        }
+
+        public static void Finally<Tsource, T1, T2, T3>(this Tsource source, T1 in1, T2 in2, T3 in3, Action<Tsource, T1, T2, T3> action)
+        {
+            action(source, in1, in2, in3);
+        }
+
+        public static void Finally<Tsource, T1, T2, T3, T4>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, Action<Tsource, T1, T2, T3, T4> action)
+        {
+            action(source, in1, in2, in3, in4);
+        }
+
+        public static void Finally<Tsource, T1, T2, T3, T4, T5>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, Action<Tsource, T1, T2, T3, T4, T5> action)
+        {
+            action(source, in1, in2, in3, in4, in5);
+        }
+
+        public static void Finally<Tsource, T1, T2, T3, T4, T5, T6>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, T6 in6, Action<Tsource, T1, T2, T3, T4, T5, T6> action)
+        {
+            action(source, in1, in2, in3, in4, in5, in6);
         }
     }
 }

@@ -45,10 +45,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CoopDigityExtensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0fce6c056fba8cb7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Common\Assemblies\CoopDigityExtensions 1.0.1\CoopDigityExtensions.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AnalysisServices.AdomdClient, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\Common\Assemblies\AdomdClient\Microsoft.AnalysisServices.AdomdClient.dll</HintPath>
@@ -65,7 +61,6 @@
   <ItemGroup>
     <Compile Include="Attributes\CubeAttribute.cs" />
     <Compile Include="Attributes\MapToAttribute.cs" />
-    <Compile Include="Attributes\MdxAttribute.cs" />
     <Compile Include="Attributes\MdxQueryableAttribute.cs" />
     <Compile Include="Attributes\TagAttribute.cs" />
     <Compile Include="Attributes\DimensionAttribute.cs" />

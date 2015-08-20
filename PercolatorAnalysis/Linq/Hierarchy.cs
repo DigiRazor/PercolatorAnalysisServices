@@ -5,11 +5,6 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Percolator.AnalysisServices.Linq
 {

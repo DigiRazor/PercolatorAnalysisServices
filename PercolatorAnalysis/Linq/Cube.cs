@@ -6,22 +6,14 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using Adomd = Microsoft.AnalysisServices.AdomdClient;
-using System.Reflection;
 
 namespace Percolator.AnalysisServices.Linq
 {
     using Percolator.AnalysisServices;
-    using Percolator.AnalysisServices.Attributes;
-using Microsoft.AnalysisServices.AdomdClient;
-    using System.ComponentModel;
+    using Microsoft.AnalysisServices.AdomdClient;
 
     /// <summary>
     /// Where all the magic happens - The main IMdxQueryable object to run against LINQ queries.

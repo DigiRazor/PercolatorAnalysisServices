@@ -6,20 +6,16 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
-using Microsoft.AnalysisServices.AdomdClient;
 
 namespace Percolator.AnalysisServices.Linq
 {
     using Percolator.AnalysisServices.Attributes;
     using Percolator.AnalysisServices;
-    using System.Data;
-    
+
     /// <summary>
     /// The order type for the MDX 'Order' function.
     /// </summary>

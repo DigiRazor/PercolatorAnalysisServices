@@ -9,11 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using Percolator.AnalysisServices.Attributes;
-using System.Linq.Expressions;
-using CoopDigity.Linq;
 
 namespace Percolator.AnalysisServices.Linq
 {
