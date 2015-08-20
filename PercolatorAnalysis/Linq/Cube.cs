@@ -6,14 +6,22 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
 using System.Data;
+using Adomd = Microsoft.AnalysisServices.AdomdClient;
+using System.Reflection;
 
 namespace Percolator.AnalysisServices.Linq
 {
     using Percolator.AnalysisServices;
-using Microsoft.AnalysisServices.AdomdClient;
+    using Percolator.AnalysisServices.Attributes;
+    using Microsoft.AnalysisServices.AdomdClient;
+    using System.ComponentModel;
 
     /// <summary>
     /// Where all the magic happens - The main IMdxQueryable object to run against LINQ queries.
@@ -22,14 +30,12 @@ using Microsoft.AnalysisServices.AdomdClient;
     public class Cube<T> : IMdxQueryable<T>
     {
         IMdxProvider _provider;
+        Expression _expression;
         List<Axis<T>> _axisGroups;
         List<MdxComponent> _components;
         byte _createdDepth;
 
-        public IMdxProvider Provider => _provider; 
-
-        public Cube()
-            : this(null) { }
+        public IMdxProvider Provider { get { return _provider; } }
 
         /// <summary>
         /// Creates a new Cube to query against.
@@ -51,11 +57,11 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <summary>
         /// The current collection of axes waiting to be queried against.
         /// </summary>
-        public List<Axis<T>> AxisCollection => _axisGroups; 
+        public List<Axis<T>> AxisCollection { get { return _axisGroups; } }
         /// <summary>
         /// The current collection of Mdx components (Slicers, Subcubes, etc) that are waiting to be queried against.
         /// </summary>
-        public List<MdxComponent> Components => _components;
+        public List<MdxComponent> Components { get { return _components; } }
 
         /// <summary>
         /// Applies mdx objects to an axis and stores the axis in this object to be queried.
@@ -67,7 +73,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             if (axisNumber > 127)
                 throw new PercolatorException("Axis max is 128");
-            return OnAxis(axisNumber, false, axisObjects);
+            return OnAxis((byte)axisNumber, false, axisObjects);
         }
 
         /// <summary>
@@ -82,7 +88,7 @@ using Microsoft.AnalysisServices.AdomdClient;
                 throw new PercolatorException("Axis max is 128");
             return OnAxis(axisNumber, false, axisObjects);
         }
-        
+
         /// <summary>
         /// Applies mdx objects to an axis and stores the axis in this object to be queried.
         /// </summary>
@@ -205,11 +211,14 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             var lator = new Percolator<T>(_axisGroups, _components);
             var command = lator.MdxCommand;
+            //var cellSet = this._provider.GetCellSet(command);
             var reader = _provider.GetReader(command);
             if (clearQueryContents)
                 Clear();
 
-            return results;
+            var mapper = new Mapperlator<T_MapTo>(reader);
+
+            return mapper;
         }
 
         public Member CreateMember(string name, Func<T, Member> memberCreator)
@@ -248,16 +257,9 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// Returns the string of the translated MDX query.
         /// </summary>
         /// <returns></returns>
-        public string TranslateToMdx() =>
-            new Percolator<T>(_axisGroups, _components).MdxCommand;
-
-        /// <summary>
-        /// Creates or renews the provider for this cube by using the new connection string passed in.
-        /// </summary>
-        /// <param name="connectionString"></param>
-        public void SetProvider(string connectionString)
+        public string TranslateToMdx()
         {
-            this._provider = new Providerlator(connectionString);
+            return new Percolator<T>(_axisGroups, _components).MdxCommand;
         }
 
         /// <summary>
@@ -274,6 +276,9 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// Overridden ToString returns a translated query.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => TranslateToMdx();
+        public override string ToString()
+        {
+            return TranslateToMdx();
+        }
     }
 }

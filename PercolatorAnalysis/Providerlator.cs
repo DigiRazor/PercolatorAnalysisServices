@@ -5,8 +5,16 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AnalysisServices.AdomdClient;
+using Percolator.AnalysisServices.Linq;
 
 namespace Percolator.AnalysisServices
 {
@@ -37,14 +45,13 @@ namespace Percolator.AnalysisServices
                 _connection.Close();
                 _connection.Open();
             }
-            }
 
             else return;
         }
 
         public CellSet GetCellSet(string mdx)
         {
-            using(var command = prepareCommand(mdx))
+            using (var command = prepareCommand(mdx))
                 return command.ExecuteCellSet();
         }
 
@@ -59,7 +66,7 @@ namespace Percolator.AnalysisServices
             using (var command = prepareCommand(mdx))
             {
                 var table = new DataTable("CubeResults");
-                using(var daptor = new AdomdDataAdapter(command))
+                using (var daptor = new AdomdDataAdapter(command))
                 {
                     daptor.Fill(table);
                 }
@@ -74,6 +81,9 @@ namespace Percolator.AnalysisServices
             return command;
         }
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose()
+        {
+            _connection.Dispose();
+        }
     }
 }
