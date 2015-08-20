@@ -1,10 +1,15 @@
-﻿using System;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
-using Adomd = Microsoft.AnalysisServices.AdomdClient;
 
 namespace Percolator.AnalysisServices.Linq
 {
@@ -24,45 +29,45 @@ namespace Percolator.AnalysisServices.Linq
 
         internal Axis(byte axisNumber, bool isNonEmpty, Expression axisCreator)
         {
-            this.AxisNumber = axisNumber;
-            this.IsNonEmpty = isNonEmpty;
-            this.Creator = axisCreator;
-            this.WithMembers = new List<string>();
-            this.WithSets = new List<string>();
+            AxisNumber = axisNumber;
+            IsNonEmpty = isNonEmpty;
+            Creator = axisCreator;
+            WithMembers = new List<string>();
+            WithSets = new List<string>();
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            var obj = this.Creator.GetValue<T>();
+            var obj = Creator.GetValue<T>();
             string str = string.Empty;
             if (obj is IEnumerable<ICubeObject>)
                 str = ((IEnumerable<ICubeObject>)obj)
                     .Select(c => c.ToString())
-                    .Aggregate((a, b) => String.Format("{0},\r\n\t", a, b));   //.JoinWith(",\t", true);
+                    .Aggregate((a, b) => $"{a},\r\n\t{b}");   //.JoinWith(",\t", true);
             else
-                str = obj == null ? null : obj.ToString();
-            if (this.IsNonEmpty)
+                str = obj?.ToString();
+            if (IsNonEmpty)
                 sb.AppendLine("NON EMPTY");
             sb.AppendLine("{");
             if(str != null)
                 sb.AppendLine("\t{0}", str);
-            if (this.WithMembers.Count > 0)
+            if (WithMembers.Count > 0)
             {
                 if(str != null)
-                    sb.AppendLine(",\t{0}", this.WithMembers.Aggregate((a, b) => String.Format("{0},\r\n\t{1}", a, b)));
+                    sb.AppendLine(",\t{0}", WithMembers.Aggregate((a, b) => $"{a},\r\n\t{b}"));
                 else
-                    sb.AppendLine("\t{0}", this.WithMembers.Aggregate((a, b) => String.Format("{0},\r\n\t{1}", a, b)));
+                    sb.AppendLine("\t{0}", WithMembers.Aggregate((a, b) => $"{a},\r\n\t{b}"));
             }
-            if (this.WithSets.Count > 0)
+            if (WithSets.Count > 0)
             {
-                if(str != null || this.WithMembers.Count > 0)
-                    sb.AppendLine("*\t{0}", this.WithSets.Aggregate((a, b) => String.Format("{0} *\r\n\t{1}", a, b)));
+                if(str != null || WithMembers.Count > 0)
+                    sb.AppendLine("*\t{0}", WithSets.Aggregate((a, b) => $"{a} *\r\n\t{b}"));
                 else
-                    sb.AppendLine("\t{0}", this.WithSets.Aggregate((a, b) => String.Format("{0} *\r\n\t{1}", a, b)));
+                    sb.AppendLine("\t{0}", WithSets.Aggregate((a, b) => $"{a} *\r\n\t{b}"));
             }
             sb.Append("}")
-                .AppendFormat(" ON {0}", this.AxisNumber);
+                .Append($" ON {AxisNumber}");
             return sb.ToString();
         }
 
@@ -73,7 +78,7 @@ namespace Percolator.AnalysisServices.Linq
 
         public Axis<T> AssembleAxis(Expression<Func<T, ICubeObject>> axisCreator)
         {
-            this.Creator = axisCreator;
+            Creator = axisCreator;
             return this;
         }
     }

@@ -5,11 +5,6 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Percolator.AnalysisServices.Attributes
 {
     using System;
@@ -33,7 +28,7 @@ namespace Percolator.AnalysisServices.Attributes
         /// <param name="tag">The name of the measure.</param>
         public MeasureAttribute(string tag)
         {
-            this.Tag = tag;
+            Tag = tag;
         }
     }
 }

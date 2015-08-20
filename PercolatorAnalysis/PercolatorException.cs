@@ -6,10 +6,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Percolator.AnalysisServices
 {
@@ -47,7 +43,7 @@ namespace Percolator.AnalysisServices
         public PercolatorQueryExeption(string message, string query)
             : base (message)
         {
-            this.MdxQuery = query;
+            MdxQuery = query;
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
 
 namespace Percolator.AnalysisServices.Attributes
 {
@@ -16,7 +17,7 @@ namespace Percolator.AnalysisServices.Attributes
 
         public MapToAttribute(string mdxColumn)
         {
-            this.MdxColumn = mdxColumn;
+            MdxColumn = mdxColumn;
         }
     }
 }

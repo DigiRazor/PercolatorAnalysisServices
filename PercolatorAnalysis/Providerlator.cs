@@ -5,16 +5,8 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AnalysisServices.AdomdClient;
-using Percolator.AnalysisServices.Linq;
 
 namespace Percolator.AnalysisServices
 {
@@ -27,7 +19,7 @@ namespace Percolator.AnalysisServices
 
         public Providerlator(string connectionString)
         {
-            this._connection = new AdomdConnection(connectionString);
+            _connection = new AdomdConnection(connectionString);
         }
 
         /// <summary>
@@ -35,18 +27,16 @@ namespace Percolator.AnalysisServices
         /// </summary>
         void openConnection()
         {
-            if (this._connection != null)
+            if (_connection.State == ConnectionState.Closed)
             {
-                if (this._connection.State == ConnectionState.Closed)
-                {
-                    this._connection.Open();
-                }
+                _connection.Open();
+            }
 
-                else if (this._connection.State == ConnectionState.Broken)
-                {
-                    this._connection.Close();
-                    this._connection.Open();
-                }
+            else if (_connection.State == ConnectionState.Broken)
+            {
+                _connection.Close();
+                _connection.Open();
+            }
             }
 
             else return;
@@ -54,19 +44,19 @@ namespace Percolator.AnalysisServices
 
         public CellSet GetCellSet(string mdx)
         {
-            using(var command = this.prepareCommand(mdx))
+            using(var command = prepareCommand(mdx))
                 return command.ExecuteCellSet();
         }
 
         public AdomdDataReader GetReader(string mdx)
         {
-            using (var command = this.prepareCommand(mdx))
+            using (var command = prepareCommand(mdx))
                 return command.ExecuteReader();
         }
 
         public DataTable GetDataTable(string mdx)
         {
-            using (var command = this.prepareCommand(mdx))
+            using (var command = prepareCommand(mdx))
             {
                 var table = new DataTable("CubeResults");
                 using(var daptor = new AdomdDataAdapter(command))
@@ -79,14 +69,11 @@ namespace Percolator.AnalysisServices
 
         AdomdCommand prepareCommand(string mdx)
         {
-            this.openConnection();
-            var command = new AdomdCommand(mdx, this._connection);
+            openConnection();
+            var command = new AdomdCommand(mdx, _connection);
             return command;
         }
 
-        public void Dispose()
-        {
-            this._connection.Dispose();
-        }
+        public void Dispose() => _connection.Dispose();
     }
 }

@@ -7,11 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Percolator.AnalysisServices.Linq;
-using System.Linq.Expressions;
 using System.Data;
 using Microsoft.AnalysisServices.AdomdClient;
 
@@ -28,34 +23,16 @@ namespace Percolator.AnalysisServices
         /// </summary>
         protected Providerlator _provider;
 
-        public Providerlator Provider { get { return this._provider; } }
-        public string ConnectionString 
-        { 
-            get
-            {
-                return this._connectionString;
-            }
-            set
-            {
-                if (this._connectionString != value)
-                {
-                    this._connectionString = value;
-                    this._provider = new Providerlator(value);
-                }
-
-                else if (this._provider == null)
-                    this._provider = new Providerlator(value);
-            }
-        }
-
+        public Providerlator Provider => _provider; 
+        internal string ConnectionString { get; set; }
         /// <summary>
         /// Instantiates new CubeBase as well as the provider and static connection string.
         /// </summary>
         /// <param name="connectionString"></param>
         public CubeBase(string connectionString)
         {
-            this._provider = new Providerlator(connectionString);
-            this.ConnectionString = connectionString;
+            _provider = new Providerlator(connectionString);
+            ConnectionString = connectionString;
         }
 
         /// <summary>
@@ -65,7 +42,17 @@ namespace Percolator.AnalysisServices
         /// <returns></returns>
         public DataTable Execute(string mdxQuery)
         {
-            return this._provider.GetDataTable(mdxQuery);
+            using(var connection = new AdomdConnection(ConnectionString))
+            using(var command = new AdomdCommand(mdxQuery, connection))
+            {
+                connection.Open();
+                using(var dapter = new AdomdDataAdapter(command))
+                {
+                    var table = new DataTable(connection.Database);
+                    dapter.Fill(table);
+                    return table;
+                }
+            }
         }
 
         /// <summary>
@@ -75,7 +62,12 @@ namespace Percolator.AnalysisServices
         /// <returns></returns>
         public CellSet ExecuteCellSet(string mdxQuery)
         {
-            return this._provider.GetCellSet(mdxQuery);
+            using (var connection = new AdomdConnection(ConnectionString))
+            using (var command = new AdomdCommand(mdxQuery, connection))
+            {
+                connection.Open();
+                return command.ExecuteCellSet();
+            }
         }
 
         /// <summary>
@@ -84,19 +76,14 @@ namespace Percolator.AnalysisServices
         /// <typeparam name="T_MapTo">The type to map the results of the query to.</typeparam>
         /// <param name="mdx">The mdx query string.</param>
         /// <returns>A collection of objects containing the mapped results of the query.</returns>
-        public IEnumerable<T_MapTo> Percolate<T_MapTo>(string mdx) where T_MapTo : new()
-        {
-            return this._provider.GetCellSet(mdx).FlattenAndReturn<T_MapTo>();
-        }
+        public IEnumerable<T_MapTo> Percolate<T_MapTo>(string mdx) where T_MapTo : new() =>
+            _provider.GetCellSet(mdx).FlattenAndReturn<T_MapTo>();
 
         #region IDisposable Members
         /// <summary>
         /// Disposes the provider.
         /// </summary>
-        public void Dispose()
-        {
-            this._provider.Dispose();
-        }
+        public void Dispose() => _provider.Dispose();
         #endregion
     }
 }

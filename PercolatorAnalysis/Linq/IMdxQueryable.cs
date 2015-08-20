@@ -9,10 +9,14 @@ using Microsoft.AnalysisServices.AdomdClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
+
 
 namespace Percolator.AnalysisServices.Linq
 {

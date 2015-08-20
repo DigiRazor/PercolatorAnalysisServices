@@ -5,11 +5,6 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Percolator.AnalysisServices.Linq
 {
@@ -21,11 +16,11 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Returns the default member of a hierarchy.
         /// </summary>
-        public Member DefaultMember { get { return new Member(string.Format("{0}.DefaultMember", this.assembleSet())); } }
+        public Member DefaultMember => $"{assembleSet()}.DefaultMember"; 
         /// <summary>
         /// Returns the unique name of a specified dimension, hierarchy, level, or member.
         /// </summary>
-        public Member UniqueName { get { return new Member(string.Format("{0}.UniqueName", this.assembleSet())); } }
+        public Member UniqueName => $"{assembleSet()}.UniqueName";
  
         /// <summary>
         /// Creates a new Hierarchy.

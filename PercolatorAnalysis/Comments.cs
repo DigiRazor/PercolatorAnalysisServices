@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
 
 namespace Percolator.AnalysisServices
 {
+    //goofy class for inserting comments in the query.  
     internal static class Comment
     {
         internal const string PAS_HEADER = "//This query brought to you by Percolator Analysis Services.\r\n//For questions, comments, bugs, or features you would like to see, contact us from the NuGet page\r\n//at www.nuget.org/packages/PercolatorAnalysisServices or visit us at www.coopdigity.com.";

@@ -1,4 +1,11 @@
-﻿using Microsoft.AnalysisServices.AdomdClient;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
+
+using Microsoft.AnalysisServices.AdomdClient;
 using Percolator.AnalysisServices.Attributes;
 using System;
 using System.Collections.Generic;
@@ -6,10 +13,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
-using CoopDigity.Linq;
 
 namespace Percolator.AnalysisServices
 {
@@ -19,18 +23,12 @@ namespace Percolator.AnalysisServices
 
         internal Mapperlator(AdomdDataReader reader)
         {
-            this._rator = new Enumerlator(reader);
+            _rator = new Enumerlator(reader);
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return this._rator;
-        }
+        public IEnumerator<T> GetEnumerator() => _rator;
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
         class Enumerlator : IEnumerator<T>
         {
@@ -39,22 +37,22 @@ namespace Percolator.AnalysisServices
             AdomdDataReader _reader;
             Creatorlator _creator;
             TypeConverter[] _converters;
-            Dictionary<string, string> _ordinals;
+            int[] _ornials;
 
             public T Current { get; private set; }
-            object System.Collections.IEnumerator.Current { get { return this.Current; } }
+            object System.Collections.IEnumerator.Current => Current; 
 
             public Enumerlator(AdomdDataReader reader)
             {
-                this._reader = reader;
-                this.init();
+                _reader = reader;
+                init();
             }
 
             public bool MoveNext()
             {
-                if (!this._reader.IsClosed && this._reader.Read())
+                if (!_reader.IsClosed && _reader.Read())
                 {
-                    this.Current = this.get();
+                    Current = get();
                     return true;
                 }
 
@@ -64,25 +62,25 @@ namespace Percolator.AnalysisServices
 
             T get()
             {
-                var rawValues = new string[this._reader.FieldCount];
+                var rawValues = new string[_reader.FieldCount];
+                
+                _ornials
+                    .For((v, i) => rawValues[i] = _reader[v] == null ? null : _reader[v].ToString());
 
-                this._ordinals.For((v, i) => 
-                    {
-                        var val = this._reader[v.Value];
-                        rawValues[i] = val == null ? null : val.ToString();
-                    });
-
-                return this._creator(this._converters, rawValues);
+                return _creator(_converters, rawValues);
             }
 
             void init()
             {
                 var type = typeof(T);
-                var schema = this._reader.GetSchemaTable();
+                var schema = _reader.GetSchemaTable();
                 var columnOrds = schema.Rows
                     .Cast<DataRow>()
-                    .Select(x =>  x[0].ToString())
-                    .ToArray();
+                    .Select(x => new
+                    {
+                        Name = x[0].ToString().Replace("[", "").Replace("]", "").Split('.')[1],
+                        Ordianl = Convert.ToInt32(x[1])
+                    });
 
                 var props = type.GetProperties()
                     .Where(x => System.Attribute.IsDefined(x, typeof(MapToAttribute)))
@@ -91,30 +89,24 @@ namespace Percolator.AnalysisServices
                         Attribute = x.GetCustomAttribute<MapToAttribute>(),
                         PropertyInfo = x
                     })
-                    .Where(x => columnOrds.Any(y => y.Contains(String.Format("[{0}]", x.Attribute.MdxColumn))))
-                    .OrderBy(x => x.Attribute.MdxColumn);
-
-                this._ordinals = columnOrds
-                    .SelectMany(x => props, (co, ps) => new
+                    .Join(columnOrds, p => p.Attribute.MdxColumn, co => co.Name, (p, co) => new
                     {
-                        MemberCaption = co,
-                        ShortName = ps.Attribute.MdxColumn
+                        Ordinal = co.Ordianl,
+                        Property = p
                     })
-                    .Where(x => x.MemberCaption.Contains(x.ShortName))
-                    .Distinct()
-                    .OrderBy(x => x.ShortName)
-                    .ToDictionary(k => k.ShortName, v => v.MemberCaption);
+                    .OrderBy(x => x.Property.Attribute.MdxColumn);
 
+                _ornials = props.Select(x => x.Ordinal).ToArray();
 
                 var bindingList = new Dictionary<ParameterExpression, MemberAssignment>();
-                this._converters = new TypeConverter[props.Count()];
+                _converters = new TypeConverter[props.Count()];
                 var stringArrayParam = Expression.Parameter(typeof(string[]), "values");
                 var converterArrayParam = Expression.Parameter(typeof(TypeConverter[]), "converters");
                 var converter = typeof(TypeConverter).GetMethod("ConvertFromString", new[] { typeof(string) });
 
                 props.For((v, i) =>
                 {
-                    var prop = v.PropertyInfo;
+                    var prop = v.Property.PropertyInfo;
                     var paramExp = Expression.Parameter(prop.PropertyType, prop.Name);
                     var arrayAssignment = Expression.ArrayIndex(stringArrayParam, Expression.Constant(i));
                     var typeConverter = TypeDescriptor.GetConverter(prop.PropertyType);
@@ -127,13 +119,13 @@ namespace Percolator.AnalysisServices
                         Expression.Convert(methodExp, prop.PropertyType))
                         .Finally(bind => bindingList.Add(paramExp, bind));
 
-                    this._converters[i] = typeConverter;
+                    _converters[i] = typeConverter;
                 });
 
                 var newExp = Expression.New(typeof(T));
                 var memberInit = Expression.MemberInit(newExp, bindingList.Values.ToArray());
                 var lambda = Expression.Lambda<Creatorlator>(memberInit, new[] { converterArrayParam, stringArrayParam });
-                this._creator = lambda.Compile();
+                _creator = lambda.Compile();
             }
 
             public void Reset()
@@ -141,10 +133,7 @@ namespace Percolator.AnalysisServices
                 throw new NotImplementedException();
             }
 
-            public void Dispose()
-            {
-                this._reader.Dispose();
-            }
+            public void Dispose() =>_reader.Dispose();
         }
     }
 }
