@@ -14,8 +14,8 @@ namespace Percolator.AnalysisServices
 
         Flat()
         {
-            this.MeasureValues = new Dictionary<string, object>();
-            this.PositionValues = new Dictionary<string, string>();
+            MeasureValues = new Dictionary<string, object>();
+            PositionValues = new Dictionary<string, string>();
         }
 
         public static IEnumerable<Flat> Flatten(CellSet cellSet)
@@ -67,8 +67,8 @@ namespace Percolator.AnalysisServices
             public MemberPair(string level, string member)
                 : this()
             {
-                this.Level = level;
-                this.Member = member;
+                Level = level;
+                Member = member;
             }
         }
     }

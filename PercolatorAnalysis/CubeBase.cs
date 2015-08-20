@@ -27,7 +27,7 @@ namespace Percolator.AnalysisServices
         /// </summary>
         protected Providerlator _provider;
 
-        public Providerlator Provider { get { return this._provider; } }
+        public Providerlator Provider { get { return _provider; } }
         internal static string ConnectionString { get; set; }
         /// <summary>
         /// Instantiates new CubeBase as well as the provider and static connection string.
@@ -35,7 +35,7 @@ namespace Percolator.AnalysisServices
         /// <param name="connectionString"></param>
         public CubeBase(string connectionString)
         {
-            this._provider = new Providerlator(connectionString);
+            _provider = new Providerlator(connectionString);
             CubeBase.ConnectionString = connectionString;
         }
 
@@ -82,7 +82,7 @@ namespace Percolator.AnalysisServices
         /// <returns>A collection of objects containing the mapped results of the query.</returns>
         public IEnumerable<T_MapTo> Percolate<T_MapTo>(string mdx) where T_MapTo : new()
         {
-            return this._provider.GetCellSet(mdx).FlattenAndReturn<T_MapTo>();
+            return _provider.GetCellSet(mdx).FlattenAndReturn<T_MapTo>();
         }
 
         #region IDisposable Members
@@ -91,7 +91,7 @@ namespace Percolator.AnalysisServices
         /// </summary>
         public void Dispose()
         {
-            this._provider.Dispose();
+            _provider.Dispose();
         }
         #endregion
     }

@@ -47,7 +47,7 @@ namespace Percolator.AnalysisServices
         public PercolatorQueryExeption(string message, string query)
             : base (message)
         {
-            this.MdxQuery = query;
+            MdxQuery = query;
         }
     }
 }

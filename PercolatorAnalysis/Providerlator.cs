@@ -27,7 +27,7 @@ namespace Percolator.AnalysisServices
 
         public Providerlator(string connectionString)
         {
-            this._connection = new AdomdConnection(connectionString);
+            _connection = new AdomdConnection(connectionString);
         }
 
         /// <summary>
@@ -35,17 +35,17 @@ namespace Percolator.AnalysisServices
         /// </summary>
         void openConnection()
         {
-            if (this._connection.State == ConnectionState.Closed)
+            if (_connection.State == ConnectionState.Closed)
             {
-                if (this._connection == null)
-                    this._connection = new AdomdConnection(CubeBase.ConnectionString);
-                this._connection.Open();
+                if (_connection == null)
+                    _connection = new AdomdConnection(CubeBase.ConnectionString);
+                _connection.Open();
             }
 
-            else if (this._connection.State == ConnectionState.Broken)
+            else if (_connection.State == ConnectionState.Broken)
             {
-                this._connection.Close();
-                this._connection.Open();
+                _connection.Close();
+                _connection.Open();
             }
 
             else return;
@@ -53,19 +53,19 @@ namespace Percolator.AnalysisServices
 
         public CellSet GetCellSet(string mdx)
         {
-            using(var command = this.prepareCommand(mdx))
+            using(var command = prepareCommand(mdx))
                 return command.ExecuteCellSet();
         }
 
         public AdomdDataReader GetReader(string mdx)
         {
-            using (var command = this.prepareCommand(mdx))
+            using (var command = prepareCommand(mdx))
                 return command.ExecuteReader();
         }
 
         public DataTable GetDataTable(string mdx)
         {
-            using (var command = this.prepareCommand(mdx))
+            using (var command = prepareCommand(mdx))
             {
                 var table = new DataTable("CubeResults");
                 using(var daptor = new AdomdDataAdapter(command))
@@ -78,14 +78,14 @@ namespace Percolator.AnalysisServices
 
         AdomdCommand prepareCommand(string mdx)
         {
-            this.openConnection();
-            var command = new AdomdCommand(mdx, this._connection);
+            openConnection();
+            var command = new AdomdCommand(mdx, _connection);
             return command;
         }
 
         public void Dispose()
         {
-            this._connection.Dispose();
+            _connection.Dispose();
         }
     }
 }

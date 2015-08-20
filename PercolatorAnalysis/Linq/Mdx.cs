@@ -482,6 +482,17 @@ namespace Percolator.AnalysisServices.Linq
                 return new Set(string.Format("Generate({0}, {1}, ALL)", set1, set2));
 
         }
+
+        /// <summary>
+        /// MDX 'CoalesceEmpty' function. Converts an empty cell value to a specified nonempty cell value, which can be either a number or string.
+        /// </summary>
+        /// <param name="numericExpression">A valid numeric expression that is typically a Multidimensional Expressions (MDX) expression of cell coordinates that return a number.</param>
+        /// <param name="replacement">The value to return if the numeric expression is null.</param>
+        /// <returns></returns>
+        public static Member CoalesceEmpty(Member numericExpression, object replacement)
+        {
+            return new Member(String.Format("CoalesceEmpty({0}, {1})", numericExpression, replacement));
+        }
         #endregion
 
         #region Hierarchy Functions
@@ -594,7 +605,7 @@ namespace Percolator.AnalysisServices.Linq
             else if (System.Attribute.IsDefined(member.Member, typeof(MeasureAttribute)))
                 return member.Member.GetCustomAttribute<MeasureAttribute>().Tag;
             else
-                throw new PercolatorException("The value cannot be obtained.");
+                return Expression.Lambda<Func<object>>(member, new ParameterExpression[0]).Compile()().ToString();
         }
         #endregion
     }

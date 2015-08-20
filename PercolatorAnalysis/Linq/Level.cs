@@ -26,17 +26,17 @@ namespace Percolator.AnalysisServices.Linq
         /// Evaluates either a hierarchy or a level expression and returns a set that contains all members of the specified hierarchy or level, 
         /// which includes all calculated members in the hierarchy or level.
         /// </summary>
-        public Set AllMembers { get { return new Set(string.Format("{0}.AllMembers", this.assembleSet())); } }
+        public Set AllMembers { get { return new Set(string.Format("{0}.AllMembers", assembleSet())); } }
         /// <summary>
         /// Returns the hierarchy that contains a specified member or level.
         /// </summary>
-        public Set Hierarchy { get { return new Set(string.Format("{0}.Hierarchy", this.assembleSet())); } }
+        public Set Hierarchy { get { return new Set(string.Format("{0}.Hierarchy", assembleSet())); } }
         /// <summary>
         /// C# Indexer representing the member brackets in an MDX query. 
         /// </summary>
         /// <param name="hierarchyMemberNames">The members of the level. Chain the members together to create the entire hierarchy level member.</param>
         /// <returns></returns>
-        public Member this[params string[] hierarchyMemberNames] { get { return this.memberFrom(hierarchyMemberNames); } }
+        public Member this[params string[] hierarchyMemberNames] { get { return memberFrom(hierarchyMemberNames); } }
 
         /// <summary>
         /// Creates a new level.
@@ -46,14 +46,14 @@ namespace Percolator.AnalysisServices.Linq
         public Level(string tag, int ordinalLevel)
             : base(tag)
         {
-            this.OrdinalLevel = ordinalLevel;
+            OrdinalLevel = ordinalLevel;
         }
 
         internal Level(object value, Type type, string tag)
             :base(tag)
         {
-            this.ObjectValue = value;
-            this.ValueType = type;
+            ObjectValue = value;
+            ValueType = type;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Percolator.AnalysisServices.Linq
         public Level(string str)
             : base (str)
         {
-            this.OrdinalLevel = default(int);
+            OrdinalLevel = default(int);
         }
 
         /// <summary>
@@ -87,17 +87,17 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public override string ToString()
         {
-            return this.assembleSet();
+            return assembleSet();
         }
 
         string assembleExtension(string str)
         {
-            return string.Format("{0}.{1}", this.assembleSet(), str);
+            return string.Format("{0}.{1}", assembleSet(), str);
         }
 
         Member memberFrom(string[] memberNames)
         {
-            string att = this.assembleSet();
+            string att = assembleSet();
             var members = new List<string>(memberNames.Length);
             var sb = new StringBuilder(att);
             foreach (var value in memberNames)

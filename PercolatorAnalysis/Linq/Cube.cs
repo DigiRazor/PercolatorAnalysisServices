@@ -35,7 +35,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         List<MdxComponent> _components;
         byte _createdDepth;
 
-        public IMdxProvider Provider { get { return this._provider; } }
+        public IMdxProvider Provider { get { return _provider; } }
 
         /// <summary>
         /// Creates a new Cube to query against.
@@ -46,22 +46,22 @@ using Microsoft.AnalysisServices.AdomdClient;
             if (provider == null)
                 throw new ArgumentNullException("provider");
 
-            this._provider = provider;
-            this._createdDepth = 0;
-            this._expression = Expression.Constant(this);
-            this._axisGroups = new List<Axis<T>>();
-            this._components = new List<MdxComponent>();
+            _provider = provider;
+            _createdDepth = 0;
+            _expression = Expression.Constant(this);
+            _axisGroups = new List<Axis<T>>();
+            _components = new List<MdxComponent>();
         }
 
         #region IMdxQueryable<T> Members
         /// <summary>
         /// The current collection of axes waiting to be queried against.
         /// </summary>
-        public List<Axis<T>> AxisCollection { get { return this._axisGroups; } }
+        public List<Axis<T>> AxisCollection { get { return _axisGroups; } }
         /// <summary>
         /// The current collection of Mdx components (Slicers, Subcubes, etc) that are waiting to be queried against.
         /// </summary>
-        public List<MdxComponent> Components { get { return this._components; } }
+        public List<MdxComponent> Components { get { return _components; } }
 
         /// <summary>
         /// Applies mdx objects to an axis and stores the axis in this object to be queried.
@@ -73,7 +73,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             if (axisNumber > 127)
                 throw new PercolatorException("Axis max is 128");
-            return this.OnAxis((byte)axisNumber, false, axisObjects);
+            return OnAxis((byte)axisNumber, false, axisObjects);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             if (axisNumber > 127)
                 throw new PercolatorException("Axis max is 128");
-            return this.OnAxis(axisNumber, false, axisObjects);
+            return OnAxis(axisNumber, false, axisObjects);
         }
         
         /// <summary>
@@ -101,7 +101,7 @@ using Microsoft.AnalysisServices.AdomdClient;
             if (axisNumber > 127)
                 throw new PercolatorException("Axis max is 128");
             var axis = new Axis<T>(axisNumber, isNonEmpty, axisObjects);
-            this._axisGroups.Add(axis);
+            _axisGroups.Add(axis);
             return this;
         }
 
@@ -117,7 +117,7 @@ using Microsoft.AnalysisServices.AdomdClient;
             if (axisNumber > 127)
                 throw new PercolatorException("Axis max is 128");
             var axis = new Axis<T>(axisNumber, isNonEmpty, axisObjects);
-            this._axisGroups.Add(axis);
+            _axisGroups.Add(axis);
             return this;
         }
 
@@ -128,7 +128,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <returns></returns>
         public IMdxQueryable<T> Slice(Expression<Func<T, ICubeObject>> slicers)
         {
-            this._components.Add(new MdxComponent(Component.Where, null, slicers));
+            _components.Add(new MdxComponent(Component.Where, null, slicers));
             return this;
         }
 
@@ -139,7 +139,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <returns></returns>
         public IMdxQueryable<T> Slice(Expression<Func<T, IEnumerable<ICubeObject>>> slicers)
         {
-            this._components.Add(new MdxComponent(Component.Where, null, slicers));
+            _components.Add(new MdxComponent(Component.Where, null, slicers));
             return this;
         }
 
@@ -154,8 +154,8 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             var comp = new MdxComponent(Component.CreatedMember, name, memberCreator);
             comp.Axis = axisNumber;
-            comp.DeclarationOrder = this._createdDepth++;
-            this._components.Add(comp);
+            comp.DeclarationOrder = _createdDepth++;
+            _components.Add(comp);
             return this;
         }
 
@@ -170,8 +170,8 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             var comp = new MdxComponent(Component.CreatedSet, name, setCreator);
             comp.Axis = axisNumber;
-            comp.DeclarationOrder = this._createdDepth++;
-            this._components.Add(comp);
+            comp.DeclarationOrder = _createdDepth++;
+            _components.Add(comp);
             return this;
         }
 
@@ -184,7 +184,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             var comp = new MdxComponent(Component.SubCube);
             comp.Creator = subCube;
-            this._components.Add(comp);
+            _components.Add(comp);
             return this;
         }
 
@@ -197,7 +197,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         {
             var comp = new MdxComponent(Component.SubCube);
             comp.Creator = subCube;
-            this._components.Add(comp);
+            _components.Add(comp);
             return this;
         }
 
@@ -209,12 +209,12 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <returns>An IEnumerable of the type specified.</returns>
         public IEnumerable<T_MapTo> Percolate<T_MapTo>(bool clearQueryContents = true) where T_MapTo : new()
         {
-            var lator = new Percolator<T>(this._axisGroups, this._components);
+            var lator = new Percolator<T>(_axisGroups, _components);
             var command = lator.MdxCommand;
             //var cellSet = this._provider.GetCellSet(command);
-            var reader = this._provider.GetReader(command);
+            var reader = _provider.GetReader(command);
             if (clearQueryContents)
-                this.Clear();
+                Clear();
 
             var mapper = new Mapperlator<T_MapTo>(reader);
 
@@ -237,20 +237,20 @@ using Microsoft.AnalysisServices.AdomdClient;
 
         public CellSet ExecuteCellSet(bool clearQueryContents = true)
         {
-            var lator = new Percolator<T>(this._axisGroups, this._components);
+            var lator = new Percolator<T>(_axisGroups, _components);
             var command = lator.MdxCommand;
             if (clearQueryContents)
-                this.Clear();
-            return this._provider.GetCellSet(command);
+                Clear();
+            return _provider.GetCellSet(command);
         }
 
         public DataTable ExecuteDataTable(bool clearQueryContents = true)
         {
-            var lator = new Percolator<T>(this._axisGroups, this._components);
+            var lator = new Percolator<T>(_axisGroups, _components);
             var command = lator.MdxCommand;
             if (clearQueryContents)
-                this.Clear();
-            return this._provider.GetDataTable(command);
+                Clear();
+            return _provider.GetDataTable(command);
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <returns></returns>
         public string TranslateToMdx()
         {
-            return new Percolator<T>(this._axisGroups, this._components).MdxCommand;
+            return new Percolator<T>(_axisGroups, _components).MdxCommand;
         }
 
         /// <summary>
@@ -267,8 +267,8 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// </summary>
         public void Clear()
         {
-            this._axisGroups.Clear();
-            this._components.Clear();
+            _axisGroups.Clear();
+            _components.Clear();
         }
         #endregion
 
@@ -278,7 +278,7 @@ using Microsoft.AnalysisServices.AdomdClient;
         /// <returns></returns>
         public override string ToString()
         {
-            return this.TranslateToMdx();
+            return TranslateToMdx();
         }
     }
 }

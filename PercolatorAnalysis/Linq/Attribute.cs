@@ -20,27 +20,27 @@ namespace Percolator.AnalysisServices.Linq
     /// </summary>
     public class Attribute : Set
     {
-        public Member All { get { return new Member(string.Format("{0}.{1}", this.Tag, "[All]")); } }
+        public Member All { get { return new Member(string.Format("{0}.{1}", Tag, "[All]")); } }
         /// <summary>
         /// Retrieves a member by its name from the attribute.
         /// </summary>
         /// <param name="memberName">The name of the member. Start the name with an ampersand to retrieve the member by its address.
         /// Automatically places in the square brackets.</param>
         /// <returns></returns>
-        public Member this[string memberName] { get { return this.memberFrom(memberName); } }
+        public Member this[string memberName] { get { return memberFrom(memberName); } }
         /// <summary>
         /// Retrieves a member by its name from the attribute.
         /// </summary>
         /// <param name="memberName">The name of the member. Start the name with an ampersand to retrieve the member by its address.
         /// Automatically places in the square brackets.</param>
         /// <returns></returns>
-        public Member this[int memberName] { get { return this.memberFrom(memberName.ToString()); } }
+        public Member this[int memberName] { get { return memberFrom(memberName.ToString()); } }
         /// <summary>
         /// The MDX syntax representation for this attribute.
         /// </summary>
         public string Tag { get; private set; }
 
-        public Set This { get { return this.getThis(); } }
+        public Set This { get { return getThis(); } }
          
         /// <summary>
         /// Used by the T4 template to create an attribute for a dimension.
@@ -48,15 +48,15 @@ namespace Percolator.AnalysisServices.Linq
         /// <param name="tag"></param>
         public Attribute(string tag)
         {
-            this.Tag = tag;
-            this._values.Add(tag);
+            Tag = tag;
+            _values.Add(tag);
         }
 
         internal Attribute(object value, Type type, string tag = "")
         {
-            this.ObjectValue = value;
-            this.ValueType = type;
-            this.Tag = tag;
+            ObjectValue = value;
+            ValueType = type;
+            Tag = tag;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public Member Function(string function)
         {
-            return new Member(string.Format("{0}.{1}", this.Tag, function));
+            return new Member(string.Format("{0}.{1}", Tag, function));
         }
 
         /// <summary>
@@ -90,12 +90,12 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public override string ToString()
         {
-            return this.Tag;
+            return Tag;
         }
 
         string getThis()
         {
-            var tag = this.ToString();
+            var tag = ToString();
             var split = tag.Split('.');
 
             if (split.Length == 2)
@@ -106,7 +106,7 @@ namespace Percolator.AnalysisServices.Linq
 
         Member memberFrom(string memberName)
         {
-            string att = this.Tag;
+            string att = Tag;
             string val = memberName;
             val = val.Replace("[", "").Replace("]", "");
             if (val.StartsWith("&"))

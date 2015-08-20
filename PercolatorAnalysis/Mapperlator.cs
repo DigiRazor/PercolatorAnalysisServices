@@ -19,17 +19,17 @@ namespace Percolator.AnalysisServices
 
         internal Mapperlator(AdomdDataReader reader)
         {
-            this._rator = new Enumerlator(reader);
+            _rator = new Enumerlator(reader);
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return this._rator;
+            return _rator;
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         class Enumerlator : IEnumerator<T>
@@ -42,19 +42,19 @@ namespace Percolator.AnalysisServices
             int[] _ornials;
 
             public T Current { get; private set; }
-            object System.Collections.IEnumerator.Current { get { return this.Current; } }
+            object System.Collections.IEnumerator.Current { get { return Current; } }
 
             public Enumerlator(AdomdDataReader reader)
             {
-                this._reader = reader;
-                this.init();
+                _reader = reader;
+                init();
             }
 
             public bool MoveNext()
             {
-                if (!this._reader.IsClosed && this._reader.Read())
+                if (!_reader.IsClosed && _reader.Read())
                 {
-                    this.Current = this.get();
+                    Current = get();
                     return true;
                 }
 
@@ -64,18 +64,18 @@ namespace Percolator.AnalysisServices
 
             T get()
             {
-                var rawValues = new string[this._reader.FieldCount];
-                
-                this._ornials
-                    .For((v, i) => rawValues[i] = this._reader[v] == null ? null : this._reader[v].ToString());
+                var rawValues = new string[_reader.FieldCount];
 
-                return this._creator(this._converters, rawValues);
+                _ornials
+                    .For((v, i) => rawValues[i] = _reader[v] == null ? null : _reader[v].ToString());
+
+                return _creator(_converters, rawValues);
             }
 
             void init()
             {
                 var type = typeof(T);
-                var schema = this._reader.GetSchemaTable();
+                var schema = _reader.GetSchemaTable();
                 var columnOrds = schema.Rows
                     .Cast<DataRow>()
                     .Select(x => new
@@ -98,10 +98,10 @@ namespace Percolator.AnalysisServices
                     })
                     .OrderBy(x => x.Property.Attribute.MdxColumn);
 
-                this._ornials = props.Select(x => x.Ordinal).ToArray();
+                _ornials = props.Select(x => x.Ordinal).ToArray();
 
                 var bindingList = new Dictionary<ParameterExpression, MemberAssignment>();
-                this._converters = new TypeConverter[props.Count()];
+                _converters = new TypeConverter[props.Count()];
                 var stringArrayParam = Expression.Parameter(typeof(string[]), "values");
                 var converterArrayParam = Expression.Parameter(typeof(TypeConverter[]), "converters");
                 var converter = typeof(TypeConverter).GetMethod("ConvertFromString", new[] { typeof(string) });
@@ -121,13 +121,13 @@ namespace Percolator.AnalysisServices
                         Expression.Convert(methodExp, prop.PropertyType))
                         .Finally(bind => bindingList.Add(paramExp, bind));
 
-                    this._converters[i] = typeConverter;
+                    _converters[i] = typeConverter;
                 });
 
                 var newExp = Expression.New(typeof(T));
                 var memberInit = Expression.MemberInit(newExp, bindingList.Values.ToArray());
                 var lambda = Expression.Lambda<Creatorlator>(memberInit, new[] { converterArrayParam, stringArrayParam });
-                this._creator = lambda.Compile();
+                _creator = lambda.Compile();
             }
 
             public void Reset()
@@ -137,7 +137,7 @@ namespace Percolator.AnalysisServices
 
             public void Dispose()
             {
-                this._reader.Dispose();
+                _reader.Dispose();
             }
         }
     }

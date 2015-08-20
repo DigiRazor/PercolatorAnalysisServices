@@ -17,16 +17,16 @@ namespace Percolator.AnalysisServices.Attributes
 
         public MdxAttribute(string tag, Axis axis)
         {
-            this.Tag = tag;
-            this.Axis = axis;
-            this.Options = MdxOptions.None;
+            Tag = tag;
+            Axis = axis;
+            Options = MdxOptions.None;
         }
 
         public MdxAttribute(string tag, Axis axis, MdxOptions options)
         {
-            this.Tag = tag;
-            this.Axis = axis;
-            this.Options = options;
+            Tag = tag;
+            Axis = axis;
+            Options = options;
         }
     }
 }

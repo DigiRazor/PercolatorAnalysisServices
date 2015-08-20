@@ -75,7 +75,6 @@
     <Compile Include="Flat.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Mapperlator.cs" />
-    <Compile Include="MdxQueryObject.cs" />
     <Compile Include="Linq\Hierarchy.cs" />
     <Compile Include="ICubeObject.cs" />
     <Compile Include="Linq\Axis.cs" />

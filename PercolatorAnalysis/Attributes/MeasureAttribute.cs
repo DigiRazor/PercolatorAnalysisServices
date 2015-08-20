@@ -33,7 +33,7 @@ namespace Percolator.AnalysisServices.Attributes
         /// <param name="tag">The name of the measure.</param>
         public MeasureAttribute(string tag)
         {
-            this.Tag = tag;
+            Tag = tag;
         }
     }
 }

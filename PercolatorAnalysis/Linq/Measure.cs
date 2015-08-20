@@ -22,18 +22,18 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// The MDX syntax representation of this measure.
         /// </summary>
-        public string Tag { get { return string.Format("Measures.[{0}]", this._tag); } }
+        public string Tag { get { return string.Format("Measures.[{0}]", _tag); } }
         /// <summary>
         /// The name of the measure.
         /// </summary>
-        public string MeasureName { get { return this._tag; } }
+        public string MeasureName { get { return _tag; } }
         /// <summary>
         /// Creates a representation of a MDX measure.
         /// </summary>
         /// <param name="tag">The name of the measure.</param>
         public Measure(string tag)
         {
-            this._tag = tag;
+            _tag = tag;
         }
         
         /// <summary>
@@ -107,7 +107,7 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        public static implicit operator string(Measure m) { return null; }
+        public static implicit operator string(Measure m) { return m.ToString(); }
         /// <summary>
         /// Member conversion for a Measure.
         /// </summary>
@@ -118,7 +118,7 @@ namespace Percolator.AnalysisServices.Linq
         /// Overridden toString that returns this measure's tag.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() { return this.Tag; }
+        public override string ToString() { return Tag; }
 
         public static Member operator &(Measure measure1, Measure measure2)
         {

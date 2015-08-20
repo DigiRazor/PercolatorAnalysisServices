@@ -34,31 +34,31 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Returns the number of cells in a set.
         /// </summary>
-        public Member Count { get { return new Member(this.assembleExtension("Count")); } }
+        public Member Count { get { return new Member(assembleExtension("Count")); } }
         /// <summary>
         /// Returns the set of children of a specified member.
         /// </summary>
-        public Set Children { get { return new Set(this.assembleExtension("Children")); } }
+        public Set Children { get { return new Set(assembleExtension("Children")); } }
         /// <summary>
         /// Returns the current tuple from a set during iteration.
         /// </summary>
-        public Member Current { get { return new Member(this.assembleExtension("Current")); } }
+        public Member Current { get { return new Member(assembleExtension("Current")); } }
         /// <summary>
         /// Returns the current member along a specified hierarchy during iteration.
         /// </summary>
-        public Member CurrentMember { get { return new Member(this.assembleExtension("CurrentMember")); } }
+        public Member CurrentMember { get { return new Member(assembleExtension("CurrentMember")); } }
         /// <summary>
         /// Returns the current iteration number within a set during iteration.
         /// </summary>
-        public Member CurrentOrdinal { get { return new Member(this.assembleExtension("CurrentOrdinal")); } }
+        public Member CurrentOrdinal { get { return new Member(assembleExtension("CurrentOrdinal")); } }
         /// <summary>
         /// Returns the set of members in a dimension, level, or hierarchy.
         /// </summary>
-        public Set Members { get { return new Set(this.assembleExtension("Members")); } }
+        public Set Members { get { return new Set(assembleExtension("Members")); } }
         /// <summary>
         /// Returns the hierarchy that contains a specified member, level, or hierarchy.
         /// </summary>
-        public Member Dimension { get { return new Member(this.assembleExtension("Dimension")); } }
+        public Member Dimension { get { return new Member(assembleExtension("Dimension")); } }
         /// <summary>
         /// The named of the Set.
         /// </summary>
@@ -70,14 +70,14 @@ namespace Percolator.AnalysisServices.Linq
         /// <param name="objs">The cube objects to assemble the set.</param>
         public Set(params ICubeObject[] objs)
         {
-            this._values = new List<object>();
+            _values = new List<object>();
             foreach (object val in objs)
-                this._values.Add(val);
+                _values.Add(val);
         }
         internal Set(object value, Type type, string tag = "")
         {
-            this.ObjectValue = value;
-            this.ValueType = type;
+            ObjectValue = value;
+            ValueType = type;
         }
         /// <summary>
         /// Representation of a MDX 'Set'.
@@ -85,17 +85,17 @@ namespace Percolator.AnalysisServices.Linq
         /// <param name="obj">String representation of a set.</param>
         public Set(string obj)
         {
-            this._values = new List<object>();
-            this._values.Add(obj);
+            _values = new List<object>();
+            _values.Add(obj);
         }
 
-        public Member Item(int itemNumber) { return new Member(string.Format("{0}.Item({1})", this.assembleSet(), itemNumber)); }
+        public Member Item(int itemNumber) { return new Member(string.Format("{0}.Item({1})", assembleSet(), itemNumber)); }
 
         /// <summary>
         /// Returns the MDX syntax for this set.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() { return this.assembleSet(); }
+        public override string ToString() { return assembleSet(); }
         public static implicit operator string(Set set) { return set.ToString(); }
         public static implicit operator bool(Set set) { return true; } 
         public static implicit operator Set(string str) { return new Set(str); }
@@ -153,19 +153,19 @@ namespace Percolator.AnalysisServices.Linq
 
         protected string assembleSet()
         {
-            if (this._values == null)
+            if (_values == null)
                 return String.Empty;
 
             StringBuilder sb = new StringBuilder();
 
-            if (this._values.Count > 1)
+            if (_values.Count > 1)
                 sb.Append("{");
 
-            this._values
+            _values
                 .Aggregate((a, b) => String.Format("{0} * {1}"))
                 .To(sb.Append);
             
-            if (this._values.Count > 1)
+            if (_values.Count > 1)
                 sb.Append("}");
             
             return sb.ToString();
@@ -183,7 +183,7 @@ namespace Percolator.AnalysisServices.Linq
 
         string assembleExtension(string str)
         {
-            return string.Format("{0}.{1}", this.assembleSet(), str);
+            return string.Format("{0}.{1}", assembleSet(), str);
         }
     }
 }

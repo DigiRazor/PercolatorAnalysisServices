@@ -24,14 +24,14 @@ namespace Percolator.AnalysisServices.Linq
 
         public MdxComponent(Component componentType, string name, Expression componentAssembler)
         {
-            this.ComponentType = componentType;
-            this.Creator = componentAssembler;
-            this.Name = name;
+            ComponentType = componentType;
+            Creator = componentAssembler;
+            Name = name;
         }
 
         public MdxComponent AssembleComponent<T>(Expression<Func<T, object>> componentAssembler)
         {
-            this.Creator = componentAssembler;
+            Creator = componentAssembler;
             return this;
         }
     }

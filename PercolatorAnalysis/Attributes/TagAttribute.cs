@@ -37,8 +37,8 @@ namespace Percolator.AnalysisServices.Attributes
         /// <param name="tag"></param>
         public TagAttribute(string tag)
         {
-            this.Tag = tag;
-            this.Ordinal = 1;
+            Tag = tag;
+            Ordinal = 1;
         }
         /// <summary>
         /// 
@@ -47,8 +47,8 @@ namespace Percolator.AnalysisServices.Attributes
         /// <param name="ordinal"></param>
         public TagAttribute(string tag, int ordinal)
         {
-            this.Tag = tag;
-            this.Ordinal = ordinal;
+            Tag = tag;
+            Ordinal = ordinal;
         }
     }
 }

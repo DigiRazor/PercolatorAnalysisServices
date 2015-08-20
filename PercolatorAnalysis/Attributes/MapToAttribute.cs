@@ -16,7 +16,7 @@ namespace Percolator.AnalysisServices.Attributes
 
         public MapToAttribute(string mdxColumn)
         {
-            this.MdxColumn = mdxColumn;
+            MdxColumn = mdxColumn;
         }
     }
 }
