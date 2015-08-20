@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
+
+using System;
 using System.Linq.Expressions;
 using Percolator.AnalysisServices.Attributes;
 using System.Reflection;

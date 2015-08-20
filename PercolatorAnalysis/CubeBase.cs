@@ -22,8 +22,8 @@ namespace Percolator.AnalysisServices
         /// </summary>
         protected Providerlator _provider;
 
-        public Providerlator Provider { get { return _provider; } }
-        internal static string ConnectionString { get; set; }
+        public Providerlator Provider => _provider; 
+        internal string ConnectionString { get; set; }
         /// <summary>
         /// Instantiates new CubeBase as well as the provider and static connection string.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Percolator.AnalysisServices
         public CubeBase(string connectionString)
         {
             _provider = new Providerlator(connectionString);
-            CubeBase.ConnectionString = connectionString;
+            ConnectionString = connectionString;
         }
 
         /// <summary>
@@ -41,13 +41,13 @@ namespace Percolator.AnalysisServices
         /// <returns></returns>
         public DataTable Execute(string mdxQuery)
         {
-            using(AdomdConnection connection = new AdomdConnection(CubeBase.ConnectionString))
-            using(AdomdCommand command = new AdomdCommand(mdxQuery, connection))
+            using(var connection = new AdomdConnection(ConnectionString))
+            using(var command = new AdomdCommand(mdxQuery, connection))
             {
                 connection.Open();
-                using(AdomdDataAdapter dapter = new AdomdDataAdapter(command))
+                using(var dapter = new AdomdDataAdapter(command))
                 {
-                    DataTable table = new DataTable(connection.Database);
+                    var table = new DataTable(connection.Database);
                     dapter.Fill(table);
                     return table;
                 }
@@ -61,8 +61,8 @@ namespace Percolator.AnalysisServices
         /// <returns></returns>
         public CellSet ExecuteCellSet(string mdxQuery)
         {
-            using (AdomdConnection connection = new AdomdConnection(CubeBase.ConnectionString))
-            using (AdomdCommand command = new AdomdCommand(mdxQuery, connection))
+            using (var connection = new AdomdConnection(ConnectionString))
+            using (var command = new AdomdCommand(mdxQuery, connection))
             {
                 connection.Open();
                 return command.ExecuteCellSet();
@@ -75,19 +75,14 @@ namespace Percolator.AnalysisServices
         /// <typeparam name="T_MapTo">The type to map the results of the query to.</typeparam>
         /// <param name="mdx">The mdx query string.</param>
         /// <returns>A collection of objects containing the mapped results of the query.</returns>
-        public IEnumerable<T_MapTo> Percolate<T_MapTo>(string mdx) where T_MapTo : new()
-        {
-            return _provider.GetCellSet(mdx).FlattenAndReturn<T_MapTo>();
-        }
+        public IEnumerable<T_MapTo> Percolate<T_MapTo>(string mdx) where T_MapTo : new() =>
+            _provider.GetCellSet(mdx).FlattenAndReturn<T_MapTo>();
 
         #region IDisposable Members
         /// <summary>
         /// Disposes the provider.
         /// </summary>
-        public void Dispose()
-        {
-            _provider.Dispose();
-        }
+        public void Dispose() => _provider.Dispose();
         #endregion
     }
 }

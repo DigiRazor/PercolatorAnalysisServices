@@ -16,11 +16,11 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Returns the default member of a hierarchy.
         /// </summary>
-        public Member DefaultMember { get { return new Member(string.Format("{0}.DefaultMember", assembleSet())); } }
+        public Member DefaultMember => $"{assembleSet()}.DefaultMember"; 
         /// <summary>
         /// Returns the unique name of a specified dimension, hierarchy, level, or member.
         /// </summary>
-        public Member UniqueName { get { return new Member(string.Format("{0}.UniqueName", assembleSet())); } }
+        public Member UniqueName => $"{assembleSet()}.UniqueName";
  
         /// <summary>
         /// Creates a new Hierarchy.

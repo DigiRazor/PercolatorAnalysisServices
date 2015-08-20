@@ -29,8 +29,6 @@ namespace Percolator.AnalysisServices
         {
             if (_connection.State == ConnectionState.Closed)
             {
-                if (_connection == null)
-                    _connection = new AdomdConnection(CubeBase.ConnectionString);
                 _connection.Open();
             }
 
@@ -75,9 +73,6 @@ namespace Percolator.AnalysisServices
             return command;
         }
 
-        public void Dispose()
-        {
-            _connection.Dispose();
-        }
+        public void Dispose() => _connection.Dispose();
     }
 }

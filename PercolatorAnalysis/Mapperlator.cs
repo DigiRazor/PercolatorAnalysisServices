@@ -1,4 +1,11 @@
-﻿using Microsoft.AnalysisServices.AdomdClient;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
+
+using Microsoft.AnalysisServices.AdomdClient;
 using Percolator.AnalysisServices.Attributes;
 using System;
 using System.Collections.Generic;
@@ -19,15 +26,9 @@ namespace Percolator.AnalysisServices
             _rator = new Enumerlator(reader);
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _rator;
-        }
+        public IEnumerator<T> GetEnumerator() => _rator;
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
         class Enumerlator : IEnumerator<T>
         {
@@ -39,7 +40,7 @@ namespace Percolator.AnalysisServices
             int[] _ornials;
 
             public T Current { get; private set; }
-            object System.Collections.IEnumerator.Current { get { return Current; } }
+            object System.Collections.IEnumerator.Current => Current; 
 
             public Enumerlator(AdomdDataReader reader)
             {
@@ -132,10 +133,7 @@ namespace Percolator.AnalysisServices
                 throw new NotImplementedException();
             }
 
-            public void Dispose()
-            {
-                _reader.Dispose();
-            }
+            public void Dispose() =>_reader.Dispose();
         }
     }
 }

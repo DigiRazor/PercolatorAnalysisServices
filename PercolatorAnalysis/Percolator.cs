@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -68,7 +75,7 @@ namespace Percolator.AnalysisServices
             try
             {
                 string from = typeof(T).GetCustomAttribute<CubeAttribute>().Tag;
-                _translations.Add(new Translation(Percolator<T>._FROM, string.Format("FROM [{0}]", from)));
+                _translations.Add(new Translation(_FROM, string.Format("FROM [{0}]", from)));
             }
             catch(NullReferenceException e)
             {
@@ -133,7 +140,7 @@ namespace Percolator.AnalysisServices
             if (!tryGetTagName(memberExp, out name))
             {
                 if (string.IsNullOrEmpty(comp.Name))
-                    name = string.Format("_member{0}", _memberDepth++);
+                    name = $"_member{_memberDepth++}";
                 else
                     name = comp.Name;
             }
@@ -164,7 +171,7 @@ namespace Percolator.AnalysisServices
             if(!tryGetTagName(memberExp, out name))
             {
                 if (string.IsNullOrEmpty(comp.Name))
-                    name = string.Format("_set{0}", _setDepth++);
+                    name = $"_set{_setDepth++}";
                 else
                     name = comp.Name;
             }
@@ -189,13 +196,13 @@ namespace Percolator.AnalysisServices
         void prepareSubCube(Expression node)
         {
             var val = node.GetValue<T>();
-            var currentSubcube = _translations.FirstOrDefault(x => x.Type == Percolator<T>._SUBCUBE);
+            var currentSubcube = _translations.FirstOrDefault(x => x.Type == _SUBCUBE);
 
             if (val is IEnumerable<ICubeObject>)
             {
                 var concact = ((IEnumerable<ICubeObject>)val)
                     .Select(x => x.ToString())
-                    .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+                    .Aggregate((a, b) => $"{a}, {b}");
 
                 if (currentSubcube != null)
                     currentSubcube.Value = concact;
@@ -250,24 +257,23 @@ namespace Percolator.AnalysisServices
             switch (component)
             {
                 case Component.From:
-                    return Percolator<T>._FROM;
+                    return _FROM;
 
                 case Component.Where:
-                    return Percolator<T>._WHERE;
+                    return _WHERE;
 
                 case Component.CreatedMember:
-                    return Percolator<T>._WMEMBER;
+                    return _WMEMBER;
 
                 case Component.CreatedSet:
-                    return Percolator<T>._WSET;
+                    return _WSET;
 
                 case Component.SubCube:
-                    return Percolator<T>._SUBCUBE;
+                    return _SUBCUBE;
 
                 default:
                     throw new PercolatorException(
-                        string.Format("The component type '{0}' durring the PAS tanslation is not valid",
-                        component.ToString()));
+                        $"The component type '{component}' durring the PAS tanslation is not valid");
             }
         }
 
@@ -292,8 +298,8 @@ namespace Percolator.AnalysisServices
         {
             var sb = new StringBuilder(Comment.PAS_HEADER).AppendLine();
             sb.AppendLine();
-            var members = _translations.Where(x => x.Type == Percolator<T>._WMEMBER);
-            var sets = _translations.Where(x => x.Type == Percolator<T>._WSET);
+            var members = _translations.Where(x => x.Type == _WMEMBER);
+            var sets = _translations.Where(x => x.Type == _WSET);
             var combined = members.Union(sets).OrderBy(x => x.DeclarationOrder);
             
             if(combined.Count() > 0)
@@ -302,12 +308,12 @@ namespace Percolator.AnalysisServices
                 sb.AppendLine("WITH");
                 foreach(var com in combined.OrderBy(x => x.DeclarationOrder))
                 {
-                    string type = com.Type == Percolator<T>._WMEMBER ? "MEMBER" : "SET";
+                    string type = com.Type == _WMEMBER ? "MEMBER" : "SET";
                     if (com.Name.Contains("_set"))
                         sb.AppendLine(Comment.FOR_NO_SET_NAME);
                     if (com.Name.Contains("_member"))
                         sb.AppendLine(Comment.FOR_NO_MEMBER_NAME);
-                    sb.AppendLine("{0} {1} AS", type, com.Name);
+                    sb.AppendLine($"{type} {com.Name} AS");
                     sb.AppendLine(com.Value);
                     sb.AppendLine();
                 }
@@ -319,24 +325,24 @@ namespace Percolator.AnalysisServices
             _axis
                 .OrderBy(x => x.AxisNumber)
                 .Select(x => x.ToString())
-                .Aggregate((a, b) => String.Format("{0},\r\n{1}", a, b))
+                .Aggregate((a, b) => $"{a},\r\n{b}")
                 .To(sb.AppendLine);
 
             sb.AppendLine(Comment.FOR_FROM_REGION);
-            var subCube = _translations.FirstOrDefault(x => x.Type == Percolator<T>._SUBCUBE);
+            var subCube = _translations.FirstOrDefault(x => x.Type == _SUBCUBE);
             if (subCube != null)
             {
                 sb.AppendLine("FROM")
                     .AppendLine("(")
                     .AppendLine("\tSELECT")
                     .AppendLine("\t{0}", subCube.Value)
-                    .AppendLine("\tON 0 {0}", _translations.First(x => x.Type == Percolator<T>._FROM).Value)
+                    .AppendLine($"\tON 0 {_translations.First(x => x.Type == _FROM).Value}")
                     .AppendLine(")");
             }
             else
-                sb.AppendLine(_translations.First(x => x.Type == Percolator<T>._FROM).Value);
+                sb.AppendLine(_translations.First(x => x.Type == _FROM).Value);
 
-            var slicers = _translations.Where(x => x.Type == Percolator<T>._WHERE);
+            var slicers = _translations.Where(x => x.Type == _WHERE);
             var slicerCount = slicers.Count();
             if (slicerCount > 0)
             {
@@ -345,7 +351,7 @@ namespace Percolator.AnalysisServices
 
                 slicers
                .Select(x => x.Value)
-               .Aggregate((a, b) => String.Format("\t{0},\r\n\t{1}", a, b))
+               .Aggregate((a, b) => $"\t{a},\r\n\t{b}")
                .To(sb.AppendLine)
                .To(s => s.AppendLine(")"));
             }

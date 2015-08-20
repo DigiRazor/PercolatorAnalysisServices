@@ -27,7 +27,7 @@ namespace Percolator.AnalysisServices.Linq
         List<MdxComponent> _components;
         byte _createdDepth;
 
-        public IMdxProvider Provider { get { return _provider; } }
+        public IMdxProvider Provider => _provider; 
 
         /// <summary>
         /// Creates a new Cube to query against.
@@ -49,11 +49,11 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// The current collection of axes waiting to be queried against.
         /// </summary>
-        public List<Axis<T>> AxisCollection { get { return _axisGroups; } }
+        public List<Axis<T>> AxisCollection => _axisGroups; 
         /// <summary>
         /// The current collection of Mdx components (Slicers, Subcubes, etc) that are waiting to be queried against.
         /// </summary>
-        public List<MdxComponent> Components { get { return _components; } }
+        public List<MdxComponent> Components => _components;
 
         /// <summary>
         /// Applies mdx objects to an axis and stores the axis in this object to be queried.
@@ -65,7 +65,7 @@ namespace Percolator.AnalysisServices.Linq
         {
             if (axisNumber > 127)
                 throw new PercolatorException("Axis max is 128");
-            return OnAxis((byte)axisNumber, false, axisObjects);
+            return OnAxis(axisNumber, false, axisObjects);
         }
 
         /// <summary>
@@ -203,7 +203,6 @@ namespace Percolator.AnalysisServices.Linq
         {
             var lator = new Percolator<T>(_axisGroups, _components);
             var command = lator.MdxCommand;
-            //var cellSet = this._provider.GetCellSet(command);
             var reader = _provider.GetReader(command);
             if (clearQueryContents)
                 Clear();
@@ -249,10 +248,8 @@ namespace Percolator.AnalysisServices.Linq
         /// Returns the string of the translated MDX query.
         /// </summary>
         /// <returns></returns>
-        public string TranslateToMdx()
-        {
-            return new Percolator<T>(_axisGroups, _components).MdxCommand;
-        }
+        public string TranslateToMdx() =>
+            new Percolator<T>(_axisGroups, _components).MdxCommand;
 
         /// <summary>
         /// Clears this object's stored query axes and components.
@@ -268,9 +265,6 @@ namespace Percolator.AnalysisServices.Linq
         /// Overridden ToString returns a translated query.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return TranslateToMdx();
-        }
+        public override string ToString() => TranslateToMdx();
     }
 }

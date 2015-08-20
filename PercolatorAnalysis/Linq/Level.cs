@@ -24,17 +24,17 @@ namespace Percolator.AnalysisServices.Linq
         /// Evaluates either a hierarchy or a level expression and returns a set that contains all members of the specified hierarchy or level, 
         /// which includes all calculated members in the hierarchy or level.
         /// </summary>
-        public Set AllMembers { get { return new Set(string.Format("{0}.AllMembers", assembleSet())); } }
+        public Set AllMembers => $"{assembleSet()}.AllMembers";
         /// <summary>
         /// Returns the hierarchy that contains a specified member or level.
         /// </summary>
-        public Set Hierarchy { get { return new Set(string.Format("{0}.Hierarchy", assembleSet())); } }
+        public Set Hierarchy => $"{assembleSet()}.Hierarchy";
         /// <summary>
         /// C# Indexer representing the member brackets in an MDX query. 
         /// </summary>
         /// <param name="hierarchyMemberNames">The members of the level. Chain the members together to create the entire hierarchy level member.</param>
         /// <returns></returns>
-        public Member this[params string[] hierarchyMemberNames] { get { return memberFrom(hierarchyMemberNames); } }
+        public Member this[params string[] hierarchyMemberNames] => memberFrom(hierarchyMemberNames); 
 
         /// <summary>
         /// Creates a new level.
@@ -45,13 +45,6 @@ namespace Percolator.AnalysisServices.Linq
             : base(tag)
         {
             OrdinalLevel = ordinalLevel;
-        }
-
-        internal Level(object value, Type type, string tag)
-            :base(tag)
-        {
-            ObjectValue = value;
-            ValueType = type;
         }
 
         /// <summary>
@@ -69,29 +62,17 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static implicit operator string(Level level)
-        {
-            return level.assembleSet();
-        }
+        public static implicit operator string(Level level) => level.assembleSet();
 
-        public static implicit operator Level(string str)
-        {
-            return new Level(str);
-        }
+        public static implicit operator Level(string str) => new Level(str);
         
         /// <summary>
         /// Overridden to string returns this level's tag.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return assembleSet();
-        }
+        public override string ToString() => assembleSet();
 
-        string assembleExtension(string str)
-        {
-            return string.Format("{0}.{1}", assembleSet(), str);
-        }
+        string assembleExtension(string str) => $"{assembleSet()}.{str}";
 
         Member memberFrom(string[] memberNames)
         {
@@ -102,9 +83,9 @@ namespace Percolator.AnalysisServices.Linq
             {
                 var val = value.Replace("[", "").Replace("]", "");
                 if (val.StartsWith("&"))
-                    val = string.Format(".&[{0}]", val.Substring(1));
+                    val = $".&[{val.Substring(1)}]";
                 else
-                    val = string.Format(".[{0}]", val);
+                    val = $".[{val}]";
                 sb.Append(val);
             }
             return new Member(sb.ToString());

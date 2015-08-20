@@ -1,4 +1,11 @@
-﻿using Microsoft.AnalysisServices.AdomdClient;
+﻿/*  
+ * Percolator Analysis Services
+ *  Copyright (c) 2014 CoopDIGITy
+ *  Author: Matthew Hallmark
+ *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
+ */
+
+using Microsoft.AnalysisServices.AdomdClient;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +24,7 @@ namespace Percolator.AnalysisServices
 
         public static IEnumerable<Flat> Flatten(CellSet cellSet)
         {
-            List<string> valueMeasures = new List<string>();
+            var valueMeasures = new List<string>();
             var axes = cellSet.Axes.Cast<Microsoft.AnalysisServices.AdomdClient.Axis>().ToList();
             var members = new List<MemberPair>();
                       
