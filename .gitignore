@@ -1,7 +1,8 @@
-/Test
+Test/
+Examples/
 *.suo
-/packages
-/PercolatorAnalysis/bin
-/PercolatorAnalysis/obj
-/PercolatorAnalysis/.svn
-/PAS_Generator/.svn
+packages/
+PercolatorAnalysis/bin/
+PercolatorAnalysis/obj/
+PercolatorAnalysis/.svn
+PAS_Generator/.svn

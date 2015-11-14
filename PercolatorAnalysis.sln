@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PercolatorAnalysis", "PercolatorAnalysis\PercolatorAnalysis.csproj", "{3C223AA6-A080-4177-B2AF-A6A43E324140}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{3C42ADF5-933B-43FF-8C4B-8B132CE223E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{55D62F7F-4FF4-44D3-A151-9828BDB8EB46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{3C223AA6-A080-4177-B2AF-A6A43E324140}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C223AA6-A080-4177-B2AF-A6A43E324140}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C223AA6-A080-4177-B2AF-A6A43E324140}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C42ADF5-933B-43FF-8C4B-8B132CE223E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C42ADF5-933B-43FF-8C4B-8B132CE223E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C42ADF5-933B-43FF-8C4B-8B132CE223E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C42ADF5-933B-43FF-8C4B-8B132CE223E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55D62F7F-4FF4-44D3-A151-9828BDB8EB46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55D62F7F-4FF4-44D3-A151-9828BDB8EB46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55D62F7F-4FF4-44D3-A151-9828BDB8EB46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55D62F7F-4FF4-44D3-A151-9828BDB8EB46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
