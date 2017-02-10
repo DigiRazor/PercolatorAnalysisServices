@@ -51,41 +51,61 @@ namespace Percolator.AnalysisServices.Linq
         public override string ToString()
         {
             var sb = new StringBuilder();
-            var obj = Creator.GetValue<T>();
+            var obj = this.Creator.GetValue<T>();
             string str = string.Empty;
             if (obj is IEnumerable<ICubeObject>)
-                str = ((IEnumerable<ICubeObject>)obj)
-                    .Select(c => c.ToString())
-                    .Aggregate((a, b) => $"{a},\r\n\t{b}");   //.JoinWith(",\t", true);
+            {
+                str = ((IEnumerable<ICubeObject>)obj).Select(c => c.ToString()).Aggregate((a, b) => $"{a},\r\n\t{b}");
+                    //.JoinWith(",\t", true);
+            }
             else
+            {
                 str = obj?.ToString();
-            if (IsNonEmpty)
+            }
+
+            if (this.IsNonEmpty)
+            {
                 sb.AppendLine("NON EMPTY");
+            }
+
             sb.AppendLine("{");
-            if(str != null)
+            if (str != null)
+            {
                 sb.AppendLine("\t{0}", str);
-            if (WithMembers.Count > 0)
-            {
-                if(str != null)
-                    sb.AppendLine(",\t{0}", WithMembers.Aggregate((a, b) => $"{a},\r\n\t{b}"));
-                else
-                    sb.AppendLine("\t{0}", WithMembers.Aggregate((a, b) => $"{a},\r\n\t{b}"));
             }
-            if (WithSets.Count > 0)
+
+            if (this.WithMembers.Count > 0)
             {
-                if(str != null || WithMembers.Count > 0)
-                    sb.AppendLine("*\t{0}", WithSets.Aggregate((a, b) => $"{a} *\r\n\t{b}"));
+                if (str != null)
+                {
+                    sb.AppendLine(",\t{0}", this.WithMembers.Aggregate((a, b) => $"{a},\r\n\t{b}"));
+                }
                 else
-                    sb.AppendLine("\t{0}", WithSets.Aggregate((a, b) => $"{a} *\r\n\t{b}"));
+                {
+                    sb.AppendLine("\t{0}", this.WithMembers.Aggregate((a, b) => $"{a},\r\n\t{b}"));
+                }
             }
+            if (this.WithSets.Count > 0)
+            {
+                if (str != null || this.WithMembers.Count > 0)
+                {
+                    sb.AppendLine("*\t{0}", this.WithSets.Aggregate((a, b) => $"{a} *\r\n\t{b}"));
+                }
+                else
+                {
+                    sb.AppendLine("\t{0}", this.WithSets.Aggregate((a, b) => $"{a} *\r\n\t{b}"));
+                }
+            }
+
             sb.Append("}")
-                .Append($" ON {AxisNumber}");
+                .Append($" ON {this.AxisNumber}");
+
             return sb.ToString();
         }
 
         public Axis<T> AssembleAxis(Expression<Func<T, ICubeObject>> axisCreator)
         {
-            Creator = axisCreator;
+            this.Creator = axisCreator;
             return this;
         }
     }

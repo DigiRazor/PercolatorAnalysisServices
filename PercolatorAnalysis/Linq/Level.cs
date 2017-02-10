@@ -55,7 +55,7 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         /// <param name="hierarchyMemberNames">The members of the level. Chain the members together to create the entire hierarchy level member.</param>
         /// <returns></returns>
-        public Member this[params string[] hierarchyMemberNames] => memberFrom(hierarchyMemberNames);
+        public Member this[params string[] hierarchyMemberNames] => this.memberFrom(hierarchyMemberNames);
 
         /// <summary>
         /// Implict string conversion for the level.
@@ -70,22 +70,27 @@ namespace Percolator.AnalysisServices.Linq
         /// Overridden to string returns this level's tag.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => assembleSet();
+        public override string ToString() => this.assembleSet();
 
-        private string assembleExtension(string str) => $"{assembleSet()}.{str}";
+        private string assembleExtension(string str) => $"{this.assembleSet()}.{str}";
 
         private Member memberFrom(string[] memberNames)
         {
-            string att = assembleSet();
+            var att = this.assembleSet();
             var members = new List<string>(memberNames.Length);
             var sb = new StringBuilder(att);
             foreach (var value in memberNames)
             {
                 var val = value.Replace("[", "").Replace("]", "");
                 if (val.StartsWith("&"))
+                {
                     val = $".&[{val.Substring(1)}]";
+                }
                 else
+                {
                     val = $".[{val}]";
+                }
+
                 sb.Append(val);
             }
 

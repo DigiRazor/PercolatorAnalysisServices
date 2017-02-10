@@ -59,7 +59,7 @@ namespace Percolator.AnalysisServices
         public PercolatorQueryExeption(string message, string query)
             : base(message)
         {
-            MdxQuery = query;
+            this.MdxQuery = query;
         }
 
         public string MdxQuery { get; private set; }

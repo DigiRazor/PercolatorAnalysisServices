@@ -33,7 +33,7 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// The name of the measure.
         /// </summary>
-        public string MeasureName => _tag;
+        public string MeasureName => this._tag;
 
         /// <summary>
         /// sbyte conversion for a Measure.
@@ -126,12 +126,12 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         /// <param name="m"></param>
         /// <returns></returns>
-        //public static implicit operator Measure(Member m) { return new Measure(m); }
+        ////public static implicit operator Measure(Member m) { return new Measure(m); }
 
         /// <summary>
         /// Overridden toString that returns this measure's tag.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => Tag;
+        public override string ToString() => this.Tag;
     }
 }

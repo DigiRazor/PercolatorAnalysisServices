@@ -43,82 +43,82 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Returns the set of children of a specified member.
         /// </summary>
-        public Set Children => assembleExtension("Children");
+        public Set Children => this.assembleExtension("Children");
 
         /// <summary>
         /// Returns the system-generated data member that is associated with a nonleaf member of a dimension.
         /// </summary>
-        public Member DataMember => assembleExtension("DataMember");
+        public Member DataMember => this.assembleExtension("DataMember");
 
         /// <summary>
         /// Returns the hierarchy that contains a specified member, level, or hierarchy.
         /// </summary>
-        public Set Dimension => assembleExtension("Dimension");
+        public Set Dimension => this.assembleExtension("Dimension");
 
         /// <summary>
         /// Returns the first child of a specified member.
         /// </summary>
-        public Member FirstChild => assembleExtension("FirstChild");
+        public Member FirstChild => this.assembleExtension("FirstChild");
 
         /// <summary>
         /// Returns the first child of the parent of a member.
         /// </summary>
-        public Member FirstSibling => assembleExtension("FirstSibling");
+        public Member FirstSibling => this.assembleExtension("FirstSibling");
 
         /// <summary>
         /// Returns the last child of a specified member.
         /// </summary>
-        public Member LastChild => assembleExtension("LastChild");
+        public Member LastChild => this.assembleExtension("LastChild");
 
         /// <summary>
         /// Returns the last child of the parent of a specified member.
         /// </summary>
-        public Member LastSibling => assembleExtension("LastSibling");
+        public Member LastSibling => this.assembleExtension("LastSibling");
 
         /// <summary>
         /// Returns the hierarchy that contains a specified member or level.
         /// </summary>
-        public Set Hierarchy => assembleExtension("Hierarchy");
+        public Set Hierarchy => this.assembleExtension("Hierarchy");
 
         /// <summary>
         /// Returns the name of a dimension, hierarchy, level, or member.
         /// </summary>
-        public Member Name => assembleExtension("Name");
+        public Member Name => this.assembleExtension("Name");
 
         /// <summary>
         /// Returns the parent of a member.
         /// </summary>
-        public Member Parent => assembleExtension("Parent");
+        public Member Parent => this.assembleExtension("Parent");
 
         /// <summary>
         /// Returns the next member in the level that contains a specified member.
         /// </summary>
-        public Member NextMember => assembleExtension("NextMember");
+        public Member NextMember => this.assembleExtension("NextMember");
 
         /// <summary>
         /// Returns the previous member in the level that contains a specified member.
         /// </summary>
-        public Member PrevMember => assembleExtension("PrevMember");
+        public Member PrevMember => this.assembleExtension("PrevMember");
 
         /// <summary>
         /// Returns the siblings of a specified member, including the member itself.
         /// </summary>
-        public Set Siblings => assembleExtension("Siblings");
+        public Set Siblings => this.assembleExtension("Siblings");
 
         /// <summary>
         /// Returns the unique name of a specified dimension, hierarchy, level, or member.
         /// </summary>
-        public Member UniqueName => assembleExtension("UniqueName");
+        public Member UniqueName => this.assembleExtension("UniqueName");
 
         /// <summary>
         /// Returns the value of the current member of the Measures dimension that intersects with the current member of the attribute hierarchies in the context of the query.
         /// </summary>
-        public Member Value => assembleExtension("Value");
+        public Member Value => this.assembleExtension("Value");
 
         /// <summary>
         /// Returns the current member's caption.
         /// </summary>
-        public Member Member_Caption => assembleExtension("Member_Caption");
+        public Member Member_Caption => this.assembleExtension("Member_Caption");
 
         /// <summary>
         /// The named of the Member.
@@ -131,7 +131,7 @@ namespace Percolator.AnalysisServices.Linq
 
         public static implicit operator bool(Member mem) => true;
 
-        //public static implicit operator Member(Measure m) { return new Member(m.Tag); }
+        ////public static implicit operator Member(Measure m) { return new Member(m.Tag); }
 
         public static Member operator &(Member member1, Member member2) => $"({member1}, {member2})";
 
@@ -212,21 +212,26 @@ namespace Percolator.AnalysisServices.Linq
         private string assembleMember()
         {
             var sb = new StringBuilder();
-            if (_values.Count > 1)
+            if (this._values.Count > 1)
+            {
                 sb.Append("(");
+            }
 
-            _values
+            this._values
                 .Aggregate((a, b) => $"{a}, {b}")
                 .To(sb.Append);
 
-            if(_values.Count > 1)
+            if (this._values.Count > 1)
+            {
                 sb.Append(")");
+            }
+
             return sb.ToString();
         }
 
         private string assembleExtension(string str)
         {
-            return $"{assembleMember()}.{str}";
+            return $"{this.assembleMember()}.{str}";
         }
     }
 }

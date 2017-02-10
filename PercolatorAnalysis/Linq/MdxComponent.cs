@@ -50,7 +50,7 @@ namespace Percolator.AnalysisServices.Linq
 
         public MdxComponent AssembleComponent<T>(Expression<Func<T, object>> componentAssembler)
         {
-            Creator = componentAssembler;
+            this.Creator = componentAssembler;
             return this;
         }
     }

@@ -81,53 +81,53 @@ namespace Percolator.AnalysisServices
         {
             try
             {
-                string from = typeof(T).GetCustomAttribute<CubeAttribute>().Tag;
-                _translations.Add(new Translation(_FROM, string.Format("FROM [{0}]", from)));
+                var from = typeof(T).GetCustomAttribute<CubeAttribute>().Tag;
+                this._translations.Add(new Translation(_FROM, string.Format("FROM [{0}]", from)));
             }
             catch (NullReferenceException e)
             {
                 throw new PercolatorException(string.Format("The cube type of '{0}' is not queryable", typeof(T).Name));
             }
 
-            _axis.ForEach(axis =>
+            this._axis.ForEach(axis =>
             {
-                _currentAxis = axis.AxisNumber;
-                _currentAxisObject = axis;
-                Evaluate(axis.Creator);
+                this._currentAxis = axis.AxisNumber;
+                this._currentAxisObject = axis;
+                this.Evaluate(axis.Creator);
             });
-            _currentAxis = 190;
-            _components.ForEach(component =>
+            this._currentAxis = 190;
+            this._components.ForEach(component =>
             {
-                _currentComponent = component.ComponentType;
-                _currentAxis = getComponentValue(component.ComponentType);
-                Evaluate(component.Creator);
+                this._currentComponent = component.ComponentType;
+                this._currentAxis = this.getComponentValue(component.ComponentType);
+                this.Evaluate(component.Creator);
             });
 
-            return assembleTranslations();
+            return this.assembleTranslations();
         }
 
-        void Evaluate(Expression node)
+        private void Evaluate(Expression node)
         {
-            switch (_currentComponent)
+            switch (this._currentComponent)
             {
                 case Component.Where:
-                    prepareWhere(node);
+                    this.prepareWhere(node);
                     break;
 
                 case Component.CreatedMember:
-                    prepareCalculatedMember(node);
+                    this.prepareCalculatedMember(node);
                     break;
 
                 case Component.CreatedSet:
-                    prepareCalculatedSet(node);
+                    this.prepareCalculatedSet(node);
                     break;
 
                 case Component.SubCube:
-                    prepareSubCube(node);
+                    this.prepareSubCube(node);
                     break;
 
                 default:
-                    prepareAxis(node);
+                    this.prepareAxis(node);
                     break;
             }
         }
@@ -135,75 +135,90 @@ namespace Percolator.AnalysisServices
         private void prepareWhere(Expression node)
         {
             var obj = node.GetValue<T>();
-            setTranslation(obj);
+            this.setTranslation(obj);
         }
 
         private void prepareCalculatedMember(Expression node)
         {
             var memberExp = ((LambdaExpression)node).Body as MemberExpression;
             var obj = node.GetValue<T>();
-            var comp = _components.First(x => x.Creator == node && x.ComponentType == _currentComponent);
-            string name = string.Empty;
-            if (!tryGetTagName(memberExp, out name))
+            var comp = this._components.First(x => x.Creator == node && x.ComponentType == this._currentComponent);
+            var name = string.Empty;
+            if (!this.tryGetTagName(memberExp, out name))
             {
                 if (string.IsNullOrEmpty(comp.Name))
-                    name = $"_member{_memberDepth++}";
+                {
+                    name = $"_member{this._memberDepth++}";
+                }
                 else
+                {
                     name = comp.Name;
+                }
             }
             if (comp.Axis.HasValue)
             {
-                var axis = _axis.FirstOrDefault(x => x.AxisNumber == comp.Axis);
+                var axis = this._axis.FirstOrDefault(x => x.AxisNumber == comp.Axis);
                 if (axis != null)
                 {
-                    if(!axis.WithMembers.Contains(name))
+                    if (!axis.WithMembers.Contains(name))
+                    {
                         axis.WithMembers.Add(name);
+                    }
                 }
                 else
                 {
                     var a = new Axis<T>(comp.Axis.Value);
                     a.WithMembers.Add(name);
-                    _axis.Add(a);
+                    this._axis.Add(a);
                 }
             }
-            _translations.Add(new Translation(_currentAxis, obj.ToString()) { Name = name });            
+
+            this._translations.Add(new Translation(this._currentAxis, obj.ToString()) { Name = name });            
         }
 
         private void prepareCalculatedSet(Expression node)
         {
             var memberExp = ((LambdaExpression)node).Body as MemberExpression;
             var obj = node.GetValue<T>();
-            var comp = _components.First(x => x.Creator == node && x.ComponentType == _currentComponent);
-            string name = string.Empty;
-            if(!tryGetTagName(memberExp, out name))
+            var comp = this._components.First(x => x.Creator == node && x.ComponentType == this._currentComponent);
+            var name = string.Empty;
+            if (!this.tryGetTagName(memberExp, out name))
             {
                 if (string.IsNullOrEmpty(comp.Name))
-                    name = $"_set{_setDepth++}";
+                {
+                    name = $"_set{this._setDepth++}";
+                }
                 else
+                {
                     name = comp.Name;
+                }
             }
-            if(comp.Axis.HasValue)
+
+            if (comp.Axis.HasValue)
             {
-                var axis = _axis.FirstOrDefault(x => x.AxisNumber == comp.Axis);
+                var axis = this._axis.FirstOrDefault(x => x.AxisNumber == comp.Axis);
                 if (axis != null)
                 {
-                    if(!axis.WithSets.Contains(name))
+                    if (!axis.WithSets.Contains(name))
+                    {
                         axis.WithSets.Add(name);
+                    }
                 }
                 else
                 {
                     var a = new Axis<T>(comp.Axis.Value);
                     a.WithSets.Add(name);
-                    _axis.Add(a);
+                    this._axis.Add(a);
                 }
             }
-            _translations.Add(new Translation(_currentAxis, obj.ToString()) { Name = name });    
+
+            this._translations.Add(new Translation(this._currentAxis, obj.ToString()) { Name = name });    
         }
 
         private void prepareSubCube(Expression node)
         {
             var val = node.GetValue<T>();
-            var currentSubcube = _translations.FirstOrDefault(x => x.Type == _SUBCUBE);
+            var currentSubcube = this._translations.FirstOrDefault(x => x.Type == _SUBCUBE);
 
             if (val is IEnumerable<ICubeObject>)
             {
@@ -212,27 +227,34 @@ namespace Percolator.AnalysisServices
                     .Aggregate((a, b) => $"{a}, {b}");
 
                 if (currentSubcube != null)
+                {
                     currentSubcube.Value = concact;
+                }
                 else
-                    new Translation(getComponentValue(Component.SubCube), concact)
-                        .Finally(_translations.Add);
+                {
+                    new Translation(this.getComponentValue(Component.SubCube), concact)
+                        .Finally(this._translations.Add);
+                }
             }
-
             else
             {
                 if (currentSubcube != null)
+                {
                     currentSubcube.Value = val.ToString();
+                }
                 else
-                    new Translation(getComponentValue(Component.SubCube), val.ToString())
-                        .Finally(_translations.Add);
+                {
+                    new Translation(this.getComponentValue(Component.SubCube), val.ToString())
+                        .Finally(this._translations.Add);
+                }
             }
         }
 
         private void prepareAxis(Expression node)
         {
             var obj = node.GetValue<T>();
-            var axis = _axis.FirstOrDefault(x => x.AxisNumber == _currentAxis);
-            setTranslation(obj, _currentAxisObject.IsNonEmpty);
+            var axis = this._axis.FirstOrDefault(x => x.AxisNumber == this._currentAxis);
+            this.setTranslation(obj, this._currentAxisObject.IsNonEmpty);
         }
 
         private void setTranslation(object obj)
@@ -240,10 +262,16 @@ namespace Percolator.AnalysisServices
             if (obj != null)
             {
                 if (obj is IEnumerable<ICubeObject>)
+                {
                     foreach (var o in (IEnumerable<ICubeObject>)obj)
-                        _translations.Add(new Translation(_currentAxis, o.ToString()));
+                    {
+                        this._translations.Add(new Translation(this._currentAxis, o.ToString()));
+                    }
+                }
                 else
-                    _translations.Add(new Translation(_currentAxis, obj.ToString()));
+                {
+                    this._translations.Add(new Translation(this._currentAxis, obj.ToString()));
+                }
             }
         }
 
@@ -252,10 +280,16 @@ namespace Percolator.AnalysisServices
             if (obj != null)
             {
                 if (obj is IEnumerable<ICubeObject>)
+                {
                     foreach (var o in (IEnumerable<ICubeObject>)obj)
-                        _translations.Add(new Translation(_currentAxis, o.ToString(), isNonEmpty));
+                    {
+                        this._translations.Add(new Translation(this._currentAxis, o.ToString(), isNonEmpty));
+                    }
+                }
                 else
-                    _translations.Add(new Translation(_currentAxis, obj.ToString(), isNonEmpty));
+                {
+                    this._translations.Add(new Translation(this._currentAxis, obj.ToString(), isNonEmpty));
+                }
             }
         }
 
@@ -286,17 +320,19 @@ namespace Percolator.AnalysisServices
 
         private bool tryGetTagName(MemberExpression member, out string name)
         {
-            if(member == null)
+            if (member == null)
             {
                 name = null;
                 return false;
             }
+
             var tagAtt = member.Member.GetCustomAttribute<TagAttribute>();
             if (tagAtt != null)
             {
                 name = tagAtt.Tag;
                 return true;
             }
+
             name = null;
             return false;
         }
@@ -305,21 +341,26 @@ namespace Percolator.AnalysisServices
         {
             var sb = new StringBuilder(Comment.PAS_HEADER).AppendLine();
             sb.AppendLine();
-            var members = _translations.Where(x => x.Type == _WMEMBER);
-            var sets = _translations.Where(x => x.Type == _WSET);
+            var members = this._translations.Where(x => x.Type == _WMEMBER);
+            var sets = this._translations.Where(x => x.Type == _WSET);
             var combined = members.Union(sets).OrderBy(x => x.DeclarationOrder);
             
-            if(combined.Count() > 0)
+            if (combined.Count() > 0)
             {
                 sb.AppendLine(Comment.FOR_CREATED_REGION);
                 sb.AppendLine("WITH");
-                foreach(var com in combined.OrderBy(x => x.DeclarationOrder))
+                foreach (var com in combined.OrderBy(x => x.DeclarationOrder))
                 {
-                    string type = com.Type == _WMEMBER ? "MEMBER" : "SET";
+                    var type = com.Type == _WMEMBER ? "MEMBER" : "SET";
                     if (com.Name.Contains("_set"))
+                    {
                         sb.AppendLine(Comment.FOR_NO_SET_NAME);
+                    }
+
                     if (com.Name.Contains("_member"))
+                    {
                         sb.AppendLine(Comment.FOR_NO_MEMBER_NAME);
+                    }
                     sb.AppendLine($"{type} {com.Name} AS");
                     sb.AppendLine(com.Value);
                     sb.AppendLine();
@@ -329,27 +370,29 @@ namespace Percolator.AnalysisServices
             sb.AppendLine(Comment.FOR_SELECT_REGION);
             sb.AppendLine("SELECT");
 
-            _axis
+            this._axis
                 .OrderBy(x => x.AxisNumber)
                 .Select(x => x.ToString())
                 .Aggregate((a, b) => $"{a},\r\n{b}")
                 .To(sb.AppendLine);
 
             sb.AppendLine(Comment.FOR_FROM_REGION);
-            var subCube = _translations.FirstOrDefault(x => x.Type == _SUBCUBE);
+            var subCube = this._translations.FirstOrDefault(x => x.Type == _SUBCUBE);
             if (subCube != null)
             {
                 sb.AppendLine("FROM")
                     .AppendLine("(")
                     .AppendLine("\tSELECT")
                     .AppendLine("\t{0}", subCube.Value)
-                    .AppendLine($"\tON 0 {_translations.First(x => x.Type == _FROM).Value}")
+                    .AppendLine($"\tON 0 {this._translations.First(x => x.Type == _FROM).Value}")
                     .AppendLine(")");
             }
             else
-                sb.AppendLine(_translations.First(x => x.Type == _FROM).Value);
+            {
+                sb.AppendLine(this._translations.First(x => x.Type == _FROM).Value);
+            }
 
-            var slicers = _translations.Where(x => x.Type == _WHERE);
+            var slicers = this._translations.Where(x => x.Type == _WHERE);
             var slicerCount = slicers.Count();
             if (slicerCount > 0)
             {
@@ -357,10 +400,10 @@ namespace Percolator.AnalysisServices
                 sb.AppendLine("WHERE\r\n(");
 
                 slicers
-               .Select(x => x.Value)
-               .Aggregate((a, b) => $"\t{a},\r\n\t{b}")
-               .To(sb.AppendLine)
-               .To(s => s.AppendLine(")"));
+                    .Select(x => x.Value)
+                    .Aggregate((a, b) => $"\t{a},\r\n\t{b}")
+                    .To(sb.AppendLine)
+                    .To(s => s.AppendLine(")"));
             }
 
             return sb.ToString();

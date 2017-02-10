@@ -52,7 +52,7 @@ namespace Percolator.AnalysisServices.Linq
         {
             get
             {
-                return _provider;
+                return this._provider;
             }
         }
 
@@ -64,7 +64,7 @@ namespace Percolator.AnalysisServices.Linq
         {
             get
             {
-                return _axisGroups;
+                return this._axisGroups;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Percolator.AnalysisServices.Linq
         {
             get
             {
-                return _components;
+                return this._components;
             }
         }
 
@@ -88,8 +88,11 @@ namespace Percolator.AnalysisServices.Linq
         public IMdxQueryable<T> OnAxis(byte axisNumber, Expression<Func<T, ICubeObject>> axisObjects)
         {
             if (axisNumber > 127)
+            {
                 throw new PercolatorException("Axis max is 128");
-            return OnAxis((byte)axisNumber, false, axisObjects);
+            }
+
+            return this.OnAxis((byte)axisNumber, false, axisObjects);
         }
 
         /// <summary>
@@ -101,8 +104,11 @@ namespace Percolator.AnalysisServices.Linq
         public IMdxQueryable<T> OnAxis(byte axisNumber, Expression<Func<T, IEnumerable<ICubeObject>>> axisObjects)
         {
             if (axisNumber > 127)
+            {
                 throw new PercolatorException("Axis max is 128");
-            return OnAxis(axisNumber, false, axisObjects);
+            }
+
+            return this.OnAxis(axisNumber, false, axisObjects);
         }
 
         /// <summary>
@@ -115,9 +121,13 @@ namespace Percolator.AnalysisServices.Linq
         public IMdxQueryable<T> OnAxis(byte axisNumber, bool isNonEmpty, Expression<Func<T, ICubeObject>> axisObjects)
         {
             if (axisNumber > 127)
+            {
                 throw new PercolatorException("Axis max is 128");
+            }
+
             var axis = new Axis<T>(axisNumber, isNonEmpty, axisObjects);
-            _axisGroups.Add(axis);
+            this._axisGroups.Add(axis);
+
             return this;
         }
 
@@ -131,9 +141,13 @@ namespace Percolator.AnalysisServices.Linq
         public IMdxQueryable<T> OnAxis(byte axisNumber, bool isNonEmpty, Expression<Func<T, IEnumerable<ICubeObject>>> axisObjects)
         {
             if (axisNumber > 127)
+            {
                 throw new PercolatorException("Axis max is 128");
+            }
+
             var axis = new Axis<T>(axisNumber, isNonEmpty, axisObjects);
-            _axisGroups.Add(axis);
+            this._axisGroups.Add(axis);
+
             return this;
         }
 
@@ -144,7 +158,8 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public IMdxQueryable<T> Slice(Expression<Func<T, ICubeObject>> slicers)
         {
-            _components.Add(new MdxComponent(Component.Where, null, slicers));
+            this._components.Add(new MdxComponent(Component.Where, null, slicers));
+
             return this;
         }
 
@@ -155,7 +170,8 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public IMdxQueryable<T> Slice(Expression<Func<T, IEnumerable<ICubeObject>>> slicers)
         {
-            _components.Add(new MdxComponent(Component.Where, null, slicers));
+            this._components.Add(new MdxComponent(Component.Where, null, slicers));
+
             return this;
         }
 
@@ -168,10 +184,13 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public IMdxQueryable<T> WithMember(string name, byte? axisNumber, Expression<Func<T, Member>> memberCreator)
         {
-            var comp = new MdxComponent(Component.CreatedMember, name, memberCreator);
-            comp.Axis = axisNumber;
-            comp.DeclarationOrder = _createdDepth++;
-            _components.Add(comp);
+            var comp = new MdxComponent(Component.CreatedMember, name, memberCreator)
+                           {
+                               Axis = axisNumber,
+                               DeclarationOrder = this._createdDepth++
+                           };
+            this._components.Add(comp);
+
             return this;
         }
 
@@ -184,10 +203,13 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public IMdxQueryable<T> WithSet(string name, byte? axisNumber, Expression<Func<T, Set>> setCreator)
         {
-            var comp = new MdxComponent(Component.CreatedSet, name, setCreator);
-            comp.Axis = axisNumber;
-            comp.DeclarationOrder = _createdDepth++;
-            _components.Add(comp);
+            var comp = new MdxComponent(Component.CreatedSet, name, setCreator)
+                           {
+                               Axis = axisNumber,
+                               DeclarationOrder = this._createdDepth++
+                           };
+            this._components.Add(comp);
+
             return this;
         }
 
@@ -198,9 +220,9 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public IMdxQueryable<T> FromSubCube(Expression<Func<T, ICubeObject>> subCube)
         {
-            var comp = new MdxComponent(Component.SubCube);
-            comp.Creator = subCube;
-            _components.Add(comp);
+            var comp = new MdxComponent(Component.SubCube) { Creator = subCube };
+            this._components.Add(comp);
+
             return this;
         }
 
@@ -211,9 +233,9 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public IMdxQueryable<T> FromSubCube(Expression<Func<T, IEnumerable<ICubeObject>>> subCube)
         {
-            var comp = new MdxComponent(Component.SubCube);
-            comp.Creator = subCube;
-            _components.Add(comp);
+            var comp = new MdxComponent(Component.SubCube) { Creator = subCube };
+            this._components.Add(comp);
+
             return this;
         }
 
@@ -225,12 +247,14 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns>An IEnumerable of the type specified.</returns>
         public IEnumerable<T_MapTo> Percolate<T_MapTo>(bool clearQueryContents = true) where T_MapTo : new()
         {
-            var lator = new Percolator<T>(_axisGroups, _components);
+            var lator = new Percolator<T>(this._axisGroups, this._components);
             var command = lator.MdxCommand;
-            //var cellSet = this._provider.GetCellSet(command);
-            var reader = _provider.GetReader(command);
+            ////var cellSet = this._provider.GetCellSet(command);
+            var reader = this._provider.GetReader(command);
             if (clearQueryContents)
-                Clear();
+            {
+                this.Clear();
+            }
 
             var mapper = new Mapperlator<T_MapTo>(reader);
 
@@ -241,6 +265,7 @@ namespace Percolator.AnalysisServices.Linq
         {
             var mem = Member.Create<T>(memberCreator);
             mem.Tag = name;
+
             return mem;
         }
 
@@ -248,25 +273,32 @@ namespace Percolator.AnalysisServices.Linq
         {
             var set = Set.Create<T>(setCreator);
             set.Tag = name;
+
             return set;
         }
 
         public CellSet ExecuteCellSet(bool clearQueryContents = true)
         {
-            var lator = new Percolator<T>(_axisGroups, _components);
+            var lator = new Percolator<T>(this._axisGroups, this._components);
             var command = lator.MdxCommand;
             if (clearQueryContents)
-                Clear();
-            return _provider.GetCellSet(command);
+            {
+                this.Clear();
+            }
+
+            return this._provider.GetCellSet(command);
         }
 
         public DataTable ExecuteDataTable(bool clearQueryContents = true)
         {
-            var lator = new Percolator<T>(_axisGroups, _components);
+            var lator = new Percolator<T>(this._axisGroups, this._components);
             var command = lator.MdxCommand;
             if (clearQueryContents)
-                Clear();
-            return _provider.GetDataTable(command);
+            {
+                this.Clear();
+            }
+
+            return this._provider.GetDataTable(command);
         }
 
         /// <summary>
@@ -275,7 +307,7 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public string TranslateToMdx()
         {
-            return new Percolator<T>(_axisGroups, _components).MdxCommand;
+            return new Percolator<T>(this._axisGroups, this._components).MdxCommand;
         }
 
         /// <summary>
@@ -283,8 +315,8 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         public void Clear()
         {
-            _axisGroups.Clear();
-            _components.Clear();
+            this._axisGroups.Clear();
+            this._components.Clear();
         }
         #endregion
 
@@ -294,7 +326,7 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public override string ToString()
         {
-            return TranslateToMdx();
+            return this.TranslateToMdx();
         }
     }
 }

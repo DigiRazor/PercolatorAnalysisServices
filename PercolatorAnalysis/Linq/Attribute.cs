@@ -35,7 +35,7 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Represents this attribute's member. i.e [Stores].[Store ID].[Store ID] 
         /// </summary>
-        public Set This => getThis();
+        public Set This => this.getThis();
 
         /// <summary>
         /// Retrieves a member by its name from the attribute.
@@ -73,28 +73,36 @@ namespace Percolator.AnalysisServices.Linq
         /// Overridden ToString returns the Tag for this attribute.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => Tag;
+        public override string ToString() => this.Tag;
 
         private string getThis()
         {
-            var tag = ToString();
+            var tag = this.ToString();
             var split = tag.Split('.');
 
             if (split.Length == 2)
+            {
                 return $"{tag}.{split[1]}";
+            }
             else
+            {
                 return tag;
+            }
         }
 
         private Member memberFrom(string memberName)
         {
-            string att = Tag;
+            string att = this.Tag;
             string val = memberName;
-            val = val.Replace("[", "").Replace("]", "");
+            val = val.Replace("[", string.Empty).Replace("]", string.Empty);
             if (val.StartsWith("&"))
+            {
                 val = $"&[{val.Substring(1)}]";
+            }
             else
+            {
                 val = $"[{val}]";
+            }
             att = $"{att}.{val}";
             return new Member(att);
         }

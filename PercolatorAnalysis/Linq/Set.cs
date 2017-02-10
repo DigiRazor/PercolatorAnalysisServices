@@ -57,37 +57,37 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Returns the number of cells in a set.
         /// </summary>
-        public Member Count => assembleExtension("Count");
+        public Member Count => this.assembleExtension("Count");
 
         /// <summary>
         /// Returns the set of children of a specified member.
         /// </summary>
-        public Set Children => assembleExtension("Children");
+        public Set Children => this.assembleExtension("Children");
 
         /// <summary>
         /// Returns the current tuple from a set during iteration.
         /// </summary>
-        public Member Current => assembleExtension("Current");
+        public Member Current => this.assembleExtension("Current");
 
         /// <summary>
         /// Returns the current member along a specified hierarchy during iteration.
         /// </summary>
-        public Member CurrentMember => assembleExtension("CurrentMember");
+        public Member CurrentMember => this.assembleExtension("CurrentMember");
 
         /// <summary>
         /// Returns the current iteration number within a set during iteration.
         /// </summary>
-        public Member CurrentOrdinal => assembleExtension("CurrentOrdinal");
+        public Member CurrentOrdinal => this.assembleExtension("CurrentOrdinal");
 
         /// <summary>
         /// Returns the set of members in a dimension, level, or hierarchy.
         /// </summary>
-        public Set Members => assembleExtension("Members");
+        public Set Members => this.assembleExtension("Members");
 
         /// <summary>
         /// Returns the hierarchy that contains a specified member, level, or hierarchy.
         /// </summary>
-        public Member Dimension => assembleExtension("Dimension");
+        public Member Dimension => this.assembleExtension("Dimension");
 
         /// <summary>
         /// The named of the Set.
@@ -134,20 +134,26 @@ namespace Percolator.AnalysisServices.Linq
 
         protected string assembleSet()
         {
-            if (_values == null)
+            if (this._values == null)
+            {
                 return string.Empty;
+            }
 
             var sb = new StringBuilder();
 
-            if (_values.Count > 1)
+            if (this._values.Count > 1)
+            {
                 sb.Append("{");
+            }
 
-            _values
+            this._values
                 .Aggregate((a, b) => $"{a}, {b}")
                 .To(sb.Append);
-            
-            if (_values.Count > 1)
+
+            if (this._values.Count > 1)
+            {
                 sb.Append("}");
+            }
             
             return sb.ToString();
         }
@@ -156,6 +162,6 @@ namespace Percolator.AnalysisServices.Linq
 
         private string getAttributeValue(Level level) => level.GetType().GetCustomAttribute<TagAttribute>().Tag;
 
-        private string assembleExtension(string str) => $"{assembleSet()}.{str}";
+        private string assembleExtension(string str) => $"{this.assembleSet()}.{str}";
     }
 }
