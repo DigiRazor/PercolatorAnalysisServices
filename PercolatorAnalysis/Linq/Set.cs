@@ -63,18 +63,25 @@ namespace Percolator.AnalysisServices.Linq
         /// <param name="objs">The cube objects to assemble the set.</param>
         public Set(params ICubeObject[] objs)
         {
-            _values = new List<object>();
-            foreach (object val in objs)
-                _values.Add(val);
+            _values = new List<object>(objs);
         }
+
+        /// <summary>
+        /// Representation of a MDX 'Set'.
+        /// </summary>
+        /// <param name="objs">The cube objects to assemble the set.</param>
+        public Set(params string[] objs)
+        {
+            _values = new List<object>(objs);
+        }
+
         /// <summary>
         /// Representation of a MDX 'Set'.
         /// </summary>
         /// <param name="obj">String representation of a set.</param>
         public Set(string obj)
         {
-            _values = new List<object>();
-            _values.Add(obj);
+            _values = new List<object> { obj };
         }
 
         public Member Item(int itemNumber) => $"{assembleSet()}.Item({itemNumber})";
@@ -123,7 +130,7 @@ namespace Percolator.AnalysisServices.Linq
                 sb.Append("{");
 
             _values
-                .Aggregate((a, b) => $"{a} * {b}")
+                .Aggregate((a, b) => $"{a}, {b}")
                 .To(sb.Append);
             
             if (_values.Count > 1)

@@ -95,7 +95,7 @@ namespace Percolator.AnalysisServices.Linq
 
             paramz
                 .Select(x => x.ToString())
-                .Aggregate((a, b) => $"{0}, {1}")
+                .Aggregate((a, b) => $"{a}, {b}")
                 .To(funcBuilder.Append);
 
             funcBuilder.AppendLine(")");

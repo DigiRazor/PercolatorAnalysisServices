@@ -46,7 +46,7 @@ namespace Percolator.AnalysisServices.Linq
         /// Used by the T4 template to create an attribute for a dimension.
         /// </summary>
         /// <param name="tag"></param>
-        public Attribute(string tag)
+        public Attribute(string tag) : base(new ICubeObject[0])
         {
             Tag = tag;
             _values.Add(tag);
