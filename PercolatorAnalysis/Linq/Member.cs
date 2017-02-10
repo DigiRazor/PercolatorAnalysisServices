@@ -5,13 +5,13 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Percolator.AnalysisServices.Linq
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
     /// <summary>
     /// Representation of a MDX 'Member'.
     /// </summary>
@@ -22,67 +22,83 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Returns the set of children of a specified member.
         /// </summary>
-        public Set Children => assembleExtension("Children"); 
+        public Set Children => assembleExtension("Children");
+
         /// <summary>
         /// Returns the system-generated data member that is associated with a nonleaf member of a dimension.
         /// </summary>
-        public Member DataMember => assembleExtension("DataMember"); 
+        public Member DataMember => assembleExtension("DataMember");
+
         /// <summary>
         /// Returns the hierarchy that contains a specified member, level, or hierarchy.
         /// </summary>
         public Set Dimension => assembleExtension("Dimension");
+
         /// <summary>
         /// Returns the first child of a specified member.
         /// </summary>
         public Member FirstChild => assembleExtension("FirstChild");
+
         /// <summary>
         /// Returns the first child of the parent of a member.
         /// </summary>
         public Member FirstSibling => assembleExtension("FirstSibling");
+
         /// <summary>
         /// Returns the last child of a specified member.
         /// </summary>
         public Member LastChild => assembleExtension("LastChild");
+
         /// <summary>
         /// Returns the last child of the parent of a specified member.
         /// </summary>
         public Member LastSibling => assembleExtension("LastSibling");
+
         /// <summary>
         /// Returns the hierarchy that contains a specified member or level.
         /// </summary>
-        public Set Hierarchy => assembleExtension("Hierarchy"); 
+        public Set Hierarchy => assembleExtension("Hierarchy");
+
         /// <summary>
         /// Returns the name of a dimension, hierarchy, level, or member.
         /// </summary>
         public Member Name => assembleExtension("Name");
+
         /// <summary>
         /// Returns the parent of a member.
         /// </summary>
         public Member Parent => assembleExtension("Parent");
+
         /// <summary>
         /// Returns the next member in the level that contains a specified member.
         /// </summary>
         public Member NextMember => assembleExtension("NextMember");
+
         /// <summary>
         /// Returns the previous member in the level that contains a specified member.
         /// </summary>
         public Member PrevMember => assembleExtension("PrevMember");
+
         /// <summary>
         /// Returns the siblings of a specified member, including the member itself.
         /// </summary>
         public Set Siblings => assembleExtension("Siblings");
+
         /// <summary>
         /// Returns the unique name of a specified dimension, hierarchy, level, or member.
         /// </summary>
         public Member UniqueName => assembleExtension("UniqueName");
+
         /// <summary>
         /// Returns the value of the current member of the Measures dimension that intersects with the current member of the attribute hierarchies in the context of the query.
         /// </summary>
         public Member Value => assembleExtension("Value");
+
         /// <summary>
         /// Returns the current member's caption.
         /// </summary>
         public Member Member_Caption => assembleExtension("Member_Caption");
+
         /// <summary>
         /// The named of the Member.
         /// </summary>
@@ -115,38 +131,47 @@ namespace Percolator.AnalysisServices.Linq
         /// <param name="itemNumber"></param>
         /// <returns></returns>
         public Member Item(int itemNumber) => $"{assembleMember()}.Item({itemNumber})";
+
         /// <summary>
         /// MDX 'Lead' function. Returns the member that is a specified number of positions following a specified member along the member's level.
         /// </summary>
         /// <param name="leadCount">A valid numeric expression that specifies a number of member positions.</param>
         /// <returns></returns>
         public Member Lead(int leadCount) => $"{assembleMember()}.Lead({leadCount})";
+
         /// <summary>
         /// MDX 'Lag' function. Returns the member that is a specified number of positions before a specified member at the member's level.
         /// </summary>
         /// <param name="lagCount">A valid numeric expression that specifies the number of member positions to lag.</param>
         /// <returns></returns>
         public Member Lag(int lagCount) => $"{assembleMember()}.Lag({lagCount})";
+
         /// <summary>
         /// MDX 'Properties' function. Returns the property from the Member Properties list.
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
         public Member Properties(string property) => $"{assembleMember()}.Properties(\"{property}\")";
+
         /// <summary>
         /// Default representation of an extention function in MDX.
         /// </summary>
         /// <param name="function">The name or syntax of the function.</param>
         /// <returns></returns>
         public Member Function(string function) => $"{this}.{function}";
+
         /// <summary>
         /// Returns the MDX syntax of this member.
         /// </summary>
         /// <returns></returns>
-        public override string ToString() => assembleMember(); 
-        public static implicit operator string(Member mem) => mem.ToString(); 
-        public static implicit operator Member(string str) => new Member(str); 
-        public static implicit operator bool(Member mem) => true; 
+        public override string ToString() => assembleMember();
+
+        public static implicit operator string(Member mem) => mem.ToString();
+
+        public static implicit operator Member(string str) => new Member(str);
+
+        public static implicit operator bool(Member mem) => true;
+
         //public static implicit operator Member(Measure m) { return new Member(m.Tag); }
 
         public static Member operator &(Member member1, Member member2) => $"({member1}, {member2})";

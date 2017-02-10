@@ -5,19 +5,21 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using Microsoft.AnalysisServices.AdomdClient;
-
 namespace Percolator.AnalysisServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+
+    using Microsoft.AnalysisServices.AdomdClient;
+
     /// <summary>
     /// Base class for the main database class generated from the T4 template.
     /// </summary>
     public class CubeBase : IDisposable
     {
         string _connectionString;
+
         /// <summary>
         /// The cube's IQueryProvider implementation.
         /// </summary>
@@ -25,6 +27,7 @@ namespace Percolator.AnalysisServices
 
         public Providerlator Provider => _provider; 
         internal string ConnectionString { get; set; }
+
         /// <summary>
         /// Instantiates new CubeBase as well as the provider and static connection string.
         /// </summary>

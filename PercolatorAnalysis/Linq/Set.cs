@@ -5,53 +5,63 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using Percolator.AnalysisServices.Attributes;
-
 namespace Percolator.AnalysisServices.Linq
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+
+    using Percolator.AnalysisServices.Attributes;
+
     /// <summary>
     /// Representation of a MDX 'Set'.
     /// </summary>
     public class Set : ICubeObject
     {
         protected List<object> _values;
+
         /// <summary>
         /// The type of the Value property.
         /// </summary>
         public Type ValueType { get; protected set; }
+
         /// <summary>
         /// Returns the number of cells in a set.
         /// </summary>
         public Member Count => assembleExtension("Count");
+
         /// <summary>
         /// Returns the set of children of a specified member.
         /// </summary>
         public Set Children => assembleExtension("Children");
+
         /// <summary>
         /// Returns the current tuple from a set during iteration.
         /// </summary>
         public Member Current => assembleExtension("Current");
+
         /// <summary>
         /// Returns the current member along a specified hierarchy during iteration.
         /// </summary>
         public Member CurrentMember => assembleExtension("CurrentMember");
+
         /// <summary>
         /// Returns the current iteration number within a set during iteration.
         /// </summary>
         public Member CurrentOrdinal => assembleExtension("CurrentOrdinal");
+
         /// <summary>
         /// Returns the set of members in a dimension, level, or hierarchy.
         /// </summary>
         public Set Members => assembleExtension("Members");
+
         /// <summary>
         /// Returns the hierarchy that contains a specified member, level, or hierarchy.
         /// </summary>
         public Member Dimension => assembleExtension("Dimension");
+
         /// <summary>
         /// The named of the Set.
         /// </summary>
@@ -91,8 +101,11 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         /// <returns></returns>
         public override string ToString() => assembleSet();
+
         public static implicit operator string(Set set) => set.ToString();
+
         public static implicit operator bool(Set set) => true;
+
         public static implicit operator Set(string str) => new Set(str);
 
         public static Set operator *(Set set1, Set set2) => $"{set1} * {set2}";

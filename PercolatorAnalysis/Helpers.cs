@@ -5,20 +5,20 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using Microsoft.AnalysisServices.AdomdClient;
-using Percolator.AnalysisServices.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-
 namespace Percolator.AnalysisServices
 {
-    using Percolator.AnalysisServices.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Data;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Text;
+
+    using Microsoft.AnalysisServices.AdomdClient;
+
+    using Percolator.AnalysisServices.Attributes;
 
     internal static class Helpers
     {
@@ -317,7 +317,6 @@ namespace Percolator.AnalysisServices
         public static void Finally<Tsource, T1, T2, T3>(this Tsource source, T1 in1, T2 in2, T3 in3, Action<Tsource, T1, T2, T3> action) => action(source, in1, in2, in3);
 
         public static void Finally<Tsource, T1, T2, T3, T4>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, Action<Tsource, T1, T2, T3, T4> action) =>action(source, in1, in2, in3, in4);
-
 
         public static void Finally<Tsource, T1, T2, T3, T4, T5, T6>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, T6 in6, Action<Tsource, T1, T2, T3, T4, T5, T6> action) => action(source, in1, in2, in3, in4, in5, in6);
     }

@@ -5,15 +5,17 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using Microsoft.AnalysisServices.AdomdClient;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Percolator.AnalysisServices
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Microsoft.AnalysisServices.AdomdClient;
+
     internal class Flat
     {
         public Dictionary<string, string> PositionValues { get; set; }
+
         public Dictionary<string, object> MeasureValues { get; set; }
 
         Flat()
@@ -63,6 +65,7 @@ namespace Percolator.AnalysisServices
                 yield return flat;
             }
         }
+
         struct MemberPair
         {
             public string Level { get; set; }

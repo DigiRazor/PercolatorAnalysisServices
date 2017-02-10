@@ -5,10 +5,10 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-
 namespace Percolator.AnalysisServices.Attributes
 {
+    using System;
+
     internal sealed class MdxQueryableAttribute : Attribute
     {
         public byte AxisNumber { get; set; }

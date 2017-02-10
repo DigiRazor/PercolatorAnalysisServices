@@ -8,6 +8,7 @@
 namespace Percolator.AnalysisServices.Attributes
 {
     using System;
+
     /// <summary>
     /// Tags a property as an Analysis Services measure.
     /// </summary>
@@ -18,10 +19,14 @@ namespace Percolator.AnalysisServices.Attributes
         /// The name of the measure.
         /// </summary>
         public string Tag { get; private set; }
+
         /// <summary>
         /// 
         /// </summary>
-        public MeasureAttribute() { }
+        public MeasureAttribute()
+        {
+        }
+
         /// <summary>
         /// Creates a new PAS 'MeasureAttribute'.
         /// </summary>

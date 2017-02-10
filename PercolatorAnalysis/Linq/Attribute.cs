@@ -5,8 +5,6 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-
 namespace Percolator.AnalysisServices.Linq
 {
     /// <summary>
@@ -17,7 +15,8 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Represents the "All" member.
         /// </summary>
-        public Member All => $"{Tag}.[All]"; 
+        public Member All => $"{Tag}.[All]";
+
         /// <summary>
         /// Retrieves a member by its name from the attribute.
         /// </summary>
@@ -25,13 +24,15 @@ namespace Percolator.AnalysisServices.Linq
         /// Automatically places in the square brackets.</param>
         /// <returns></returns>
         public Member this[string memberName] => memberFrom(memberName);
+
         /// <summary>
         /// Retrieves a member by its name from the attribute.
         /// </summary>
         /// <param name="memberName">The name of the member. Start the name with an ampersand to retrieve the member by its address.
         /// Automatically places in the square brackets.</param>
         /// <returns></returns>
-        public Member this[int memberName] => memberFrom(memberName.ToString()); 
+        public Member this[int memberName] => memberFrom(memberName.ToString());
+
         /// <summary>
         /// The MDX syntax representation for this attribute.
         /// </summary>

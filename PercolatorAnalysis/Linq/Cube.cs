@@ -5,23 +5,16 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-using Adomd = Microsoft.AnalysisServices.AdomdClient;
-using System.Reflection;
-
 namespace Percolator.AnalysisServices.Linq
 {
-    using Percolator.AnalysisServices;
-    using Percolator.AnalysisServices.Attributes;
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq.Expressions;
+
     using Microsoft.AnalysisServices.AdomdClient;
-    using System.ComponentModel;
+
+    using Percolator.AnalysisServices;
 
     /// <summary>
     /// Where all the magic happens - The main IMdxQueryable object to run against LINQ queries.
@@ -30,9 +23,13 @@ namespace Percolator.AnalysisServices.Linq
     public class Cube<T> : IMdxQueryable<T>
     {
         IMdxProvider _provider;
+
         Expression _expression;
+
         List<Axis<T>> _axisGroups;
+
         List<MdxComponent> _components;
+
         byte _createdDepth;
 
         public IMdxProvider Provider { get { return _provider; } }
@@ -58,6 +55,7 @@ namespace Percolator.AnalysisServices.Linq
         /// The current collection of axes waiting to be queried against.
         /// </summary>
         public List<Axis<T>> AxisCollection { get { return _axisGroups; } }
+
         /// <summary>
         /// The current collection of Mdx components (Slicers, Subcubes, etc) that are waiting to be queried against.
         /// </summary>

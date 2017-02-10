@@ -8,6 +8,7 @@
 namespace Percolator.AnalysisServices.Attributes
 {
     using System;
+
     /// <summary>
     /// Stores the information for an attribute or level.
     /// </summary>
@@ -18,14 +19,19 @@ namespace Percolator.AnalysisServices.Attributes
         /// 
         /// </summary>
         public string Tag { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
         public int Ordinal { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
-        public TagAttribute() { }
+        public TagAttribute()
+        {
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -35,6 +41,7 @@ namespace Percolator.AnalysisServices.Attributes
             Tag = tag;
             Ordinal = 1;
         }
+
         /// <summary>
         /// 
         /// </summary>

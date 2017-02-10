@@ -5,13 +5,14 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-
 namespace Percolator.AnalysisServices
 {
+    using System;
+
     internal class NotImplementedInPAS_Exception : NotImplementedException
     {
         public string ReasonWhy { get; set; }
+
         public NotImplementedInPAS_Exception() { }
 
         public NotImplementedInPAS_Exception(string message)
@@ -26,22 +27,31 @@ namespace Percolator.AnalysisServices
         public PercolatorException() { }
 
         public PercolatorException(string message)
-            : base(message) { }
+            : base(message)
+        {
+        }
 
         public PercolatorException(string message, Exception innerException)
-            : base(message, innerException) { }
+            : base(message, innerException)
+        {
+        }
     }
 
     internal sealed class PercolatorQueryExeption : PercolatorException
     {
         public string MdxQuery { get; private set; }
-        public PercolatorQueryExeption() { }
-        
+
+        public PercolatorQueryExeption()
+        {
+        }
+
         public PercolatorQueryExeption(string message)
-            : base(message) { }
+            : base(message)
+        {
+        }
 
         public PercolatorQueryExeption(string message, string query)
-            : base (message)
+            : base(message)
         {
             MdxQuery = query;
         }

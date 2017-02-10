@@ -5,19 +5,12 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AnalysisServices.AdomdClient;
-using Percolator.AnalysisServices.Linq;
-
 namespace Percolator.AnalysisServices
 {
+    using System.Data;
+
+    using Microsoft.AnalysisServices.AdomdClient;
+
     /// <summary>
     /// The Percolator Analysis Services IQueryProvider implementation.
     /// </summary>

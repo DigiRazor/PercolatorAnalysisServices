@@ -5,18 +5,20 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using Microsoft.AnalysisServices.AdomdClient;
-using Percolator.AnalysisServices.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-
 namespace Percolator.AnalysisServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+
+    using Microsoft.AnalysisServices.AdomdClient;
+
+    using Percolator.AnalysisServices.Attributes;
+
     internal class Mapperlator<T> : IEnumerable<T>
     {
         IEnumerator<T> _rator;
@@ -35,11 +37,15 @@ namespace Percolator.AnalysisServices
             delegate T Creatorlator(TypeConverter[] converters, string[] values);
 
             AdomdDataReader _reader;
+
             Creatorlator _creator;
+
             TypeConverter[] _converters;
+
             int[] _ornials;
 
             public T Current { get; private set; }
+
             object System.Collections.IEnumerator.Current => Current; 
 
             public Enumerlator(AdomdDataReader reader)

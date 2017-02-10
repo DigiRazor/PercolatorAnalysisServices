@@ -5,13 +5,14 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Linq.Expressions;
-using Percolator.AnalysisServices.Attributes;
-using System.Reflection;
-
 namespace Percolator.AnalysisServices.Linq
 {
+    using System;
+    using System.Linq.Expressions;
+    using System.Reflection;
+
+    using Percolator.AnalysisServices.Attributes;
+
     public class MdxQuery
     {
         [MdxQueryable(AxisNumber = 1)]

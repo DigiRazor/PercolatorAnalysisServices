@@ -5,27 +5,34 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-
 namespace Percolator.AnalysisServices.Linq
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Text;
+
     public class Axis<T> : ICubeObject
     {
         public byte AxisNumber { get; set; }
+
         public bool IsNonEmpty { get; set; }
+
         internal Expression Creator { get; private set; }
+
         internal List<string> WithMembers { get; set; }
+
         internal List<string> WithSets { get; set; }
 
-        public Axis(byte axisNumber)
-            : this(axisNumber, false) { }
+        public Axis(byte axisNumber) : this(axisNumber, false)
+        {
+        }
 
         public Axis(byte axisNumber, bool isNonEmpty)
-            : this(axisNumber, isNonEmpty, null) { }
+            : this(axisNumber, isNonEmpty, null)
+        {
+        }
 
         internal Axis(byte axisNumber, bool isNonEmpty, Expression axisCreator)
         {

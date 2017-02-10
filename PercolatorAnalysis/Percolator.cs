@@ -5,27 +5,34 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Reflection;
-using Percolator.AnalysisServices.Attributes;
-using Percolator.AnalysisServices.Linq;
-
 namespace Percolator.AnalysisServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Text;
+
+    using Percolator.AnalysisServices.Attributes;
+    using Percolator.AnalysisServices.Linq;
+
     internal class Translation
     {
         public byte Type { get; set; }
+
         public string Name { get; set; }
+
         public string Value { get; set; }
+
         public byte? DeclarationOrder { get; set; }
+
         public bool IsNonEmpty { get; set; }
 
         public Translation(byte type, string value)
-            : this(type, value, false) { }
+            : this(type, value, false)
+        {
+        }
 
         public Translation(byte type, string value, bool isNonEmpty)
         {
