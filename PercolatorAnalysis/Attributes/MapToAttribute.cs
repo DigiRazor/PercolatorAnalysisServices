@@ -11,8 +11,6 @@ namespace Percolator.AnalysisServices.Attributes
 
     public sealed class MapToAttribute : Attribute
     {
-        public string MdxColumn { get; set; }
-
         public MapToAttribute()
         {
         }
@@ -21,5 +19,7 @@ namespace Percolator.AnalysisServices.Attributes
         {
             MdxColumn = mdxColumn;
         }
+
+        public string MdxColumn { get; set; }
     }
 }

@@ -16,11 +16,6 @@ namespace Percolator.AnalysisServices.Attributes
     public class MeasureAttribute : Attribute
     {
         /// <summary>
-        /// The name of the measure.
-        /// </summary>
-        public string Tag { get; private set; }
-
-        /// <summary>
         /// 
         /// </summary>
         public MeasureAttribute()
@@ -35,5 +30,10 @@ namespace Percolator.AnalysisServices.Attributes
         {
             Tag = tag;
         }
+
+        /// <summary>
+        /// The name of the measure.
+        /// </summary>
+        public string Tag { get; private set; }
     }
 }

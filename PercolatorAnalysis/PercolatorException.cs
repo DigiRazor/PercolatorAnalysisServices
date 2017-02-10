@@ -11,20 +11,28 @@ namespace Percolator.AnalysisServices
 
     internal class NotImplementedInPAS_Exception : NotImplementedException
     {
-        public string ReasonWhy { get; set; }
-
-        public NotImplementedInPAS_Exception() { }
+        public NotImplementedInPAS_Exception()
+        {
+        }
 
         public NotImplementedInPAS_Exception(string message)
-            : base(message) { }
+            : base(message)
+        {
+        }
 
         public NotImplementedInPAS_Exception(string message, Exception innerException)
-            : base(message, innerException) { }
+            : base(message, innerException)
+        {
+        }
+
+        public string ReasonWhy { get; set; }
     }
 
     internal class PercolatorException : Exception
     {
-        public PercolatorException() { }
+        public PercolatorException()
+        {
+        }
 
         public PercolatorException(string message)
             : base(message)
@@ -39,8 +47,6 @@ namespace Percolator.AnalysisServices
 
     internal sealed class PercolatorQueryExeption : PercolatorException
     {
-        public string MdxQuery { get; private set; }
-
         public PercolatorQueryExeption()
         {
         }
@@ -55,5 +61,7 @@ namespace Percolator.AnalysisServices
         {
             MdxQuery = query;
         }
+
+        public string MdxQuery { get; private set; }
     }
 }

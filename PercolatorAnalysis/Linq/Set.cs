@@ -23,6 +23,33 @@ namespace Percolator.AnalysisServices.Linq
         protected List<object> _values;
 
         /// <summary>
+        /// Representation of a MDX 'Set'.
+        /// </summary>
+        /// <param name="objs">The cube objects to assemble the set.</param>
+        public Set(params ICubeObject[] objs)
+        {
+            this._values = new List<object>(objs);
+        }
+
+        /// <summary>
+        /// Representation of a MDX 'Set'.
+        /// </summary>
+        /// <param name="objs">The cube objects to assemble the set.</param>
+        public Set(params string[] objs)
+        {
+            this._values = new List<object>(objs);
+        }
+
+        /// <summary>
+        /// Representation of a MDX 'Set'.
+        /// </summary>
+        /// <param name="obj">String representation of a set.</param>
+        public Set(string obj)
+        {
+            this._values = new List<object> { obj };
+        }
+
+        /// <summary>
         /// The type of the Value property.
         /// </summary>
         public Type ValueType { get; protected set; }
@@ -67,41 +94,6 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         public string Tag { get; set; }
 
-        /// <summary>
-        /// Representation of a MDX 'Set'.
-        /// </summary>
-        /// <param name="objs">The cube objects to assemble the set.</param>
-        public Set(params ICubeObject[] objs)
-        {
-            _values = new List<object>(objs);
-        }
-
-        /// <summary>
-        /// Representation of a MDX 'Set'.
-        /// </summary>
-        /// <param name="objs">The cube objects to assemble the set.</param>
-        public Set(params string[] objs)
-        {
-            _values = new List<object>(objs);
-        }
-
-        /// <summary>
-        /// Representation of a MDX 'Set'.
-        /// </summary>
-        /// <param name="obj">String representation of a set.</param>
-        public Set(string obj)
-        {
-            _values = new List<object> { obj };
-        }
-
-        public Member Item(int itemNumber) => $"{assembleSet()}.Item({itemNumber})";
-
-        /// <summary>
-        /// Returns the MDX syntax for this set.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString() => assembleSet();
-
         public static implicit operator string(Set set) => set.ToString();
 
         public static implicit operator bool(Set set) => true;
@@ -113,7 +105,7 @@ namespace Percolator.AnalysisServices.Linq
         public static Set operator *(Set set, Member member) => $"{set} * {member}";
 
         public static Set operator *(Member member, Set set) => $"{set} * {member}";
-       
+
         public static Set operator &(Measure measure, Set set) => $"({measure}, {set})";
 
         public static Set operator &(Set set, Measure measure) => $"({set}, {measure})";
@@ -131,6 +123,14 @@ namespace Percolator.AnalysisServices.Linq
         /// <param name="setCreator"></param>
         /// <returns></returns>
         public static Set Create<T>(Func<T, Set> setCreator) => setCreator(typeof(T).GetCubeInstance<T>());
+
+        public Member Item(int itemNumber) => $"{this.assembleSet()}.Item({itemNumber})";
+
+        /// <summary>
+        /// Returns the MDX syntax for this set.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => this.assembleSet();
 
         protected string assembleSet()
         {
@@ -152,10 +152,10 @@ namespace Percolator.AnalysisServices.Linq
             return sb.ToString();
         }
 
-        string getAttributeValue(Attribute att) => att.GetType().GetCustomAttribute<TagAttribute>().Tag;
+        private string getAttributeValue(Attribute att) => att.GetType().GetCustomAttribute<TagAttribute>().Tag;
 
-        string getAttributeValue(Level level) => level.GetType().GetCustomAttribute<TagAttribute>().Tag;
+        private string getAttributeValue(Level level) => level.GetType().GetCustomAttribute<TagAttribute>().Tag;
 
-        string assembleExtension(string str) => $"{assembleSet()}.{str}";
+        private string assembleExtension(string str) => $"{assembleSet()}.{str}";
     }
 }

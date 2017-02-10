@@ -18,15 +18,12 @@ namespace Percolator.AnalysisServices
     /// </summary>
     public class CubeBase : IDisposable
     {
-        string _connectionString;
+        private string _connectionString;
 
         /// <summary>
         /// The cube's IQueryProvider implementation.
         /// </summary>
         protected Providerlator _provider;
-
-        public Providerlator Provider => _provider; 
-        internal string ConnectionString { get; set; }
 
         /// <summary>
         /// Instantiates new CubeBase as well as the provider and static connection string.
@@ -34,9 +31,13 @@ namespace Percolator.AnalysisServices
         /// <param name="connectionString"></param>
         public CubeBase(string connectionString)
         {
-            _provider = new Providerlator(connectionString);
-            ConnectionString = connectionString;
+            this._provider = new Providerlator(connectionString);
+            this.ConnectionString = connectionString;
         }
+
+        public Providerlator Provider => _provider;
+
+        internal string ConnectionString { get; set; }
 
         /// <summary>
         /// Executes the query string and returns the result in a DataTable object.

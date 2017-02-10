@@ -14,7 +14,16 @@ namespace Percolator.AnalysisServices.Linq
     /// </summary>
     public class Measure : Member
     {
-        string _tag;
+        private string _tag;
+
+        /// <summary>
+        /// Creates a representation of a MDX measure.
+        /// </summary>
+        /// <param name="tag">The name of the measure.</param>
+        public Measure(string tag)
+        {
+            this._tag = tag;
+        }
 
         /// <summary>
         /// The MDX syntax representation of this measure.
@@ -26,15 +35,6 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         public string MeasureName => _tag;
 
-        /// <summary>
-        /// Creates a representation of a MDX measure.
-        /// </summary>
-        /// <param name="tag">The name of the measure.</param>
-        public Measure(string tag)
-        {
-            _tag = tag;
-        }
-        
         /// <summary>
         /// sbyte conversion for a Measure.
         /// </summary>
@@ -119,6 +119,8 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public static implicit operator string(Measure m) => m.ToString();
 
+        public static Member operator &(Measure measure1, Measure measure2) => $"{measure1}, {measure2}";
+
         /// <summary>
         /// Member conversion for a Measure.
         /// </summary>
@@ -131,7 +133,5 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         /// <returns></returns>
         public override string ToString() => Tag;
-
-        public static Member operator &(Measure measure1, Measure measure2) => $"{measure1}, {measure2}";
     }
 }

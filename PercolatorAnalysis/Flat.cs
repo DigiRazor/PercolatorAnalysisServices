@@ -14,15 +14,15 @@ namespace Percolator.AnalysisServices
 
     internal class Flat
     {
+        private Flat()
+        {
+            this.MeasureValues = new Dictionary<string, object>();
+            this.PositionValues = new Dictionary<string, string>();
+        }
+
         public Dictionary<string, string> PositionValues { get; set; }
 
         public Dictionary<string, object> MeasureValues { get; set; }
-
-        Flat()
-        {
-            MeasureValues = new Dictionary<string, object>();
-            PositionValues = new Dictionary<string, string>();
-        }
 
         public static IEnumerable<Flat> Flatten(CellSet cellSet)
         {
@@ -66,17 +66,18 @@ namespace Percolator.AnalysisServices
             }
         }
 
-        struct MemberPair
+        private struct MemberPair
         {
-            public string Level { get; set; }
-            public string Member { get; set; }
-
             public MemberPair(string level, string member)
                 : this()
             {
-                Level = level;
-                Member = member;
+                this.Level = level;
+                this.Member = member;
             }
+
+            public string Level { get; set; }
+
+            public string Member { get; set; }
         }
     }
 }

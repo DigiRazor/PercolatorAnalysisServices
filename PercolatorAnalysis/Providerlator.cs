@@ -16,30 +16,11 @@ namespace Percolator.AnalysisServices
     /// </summary>
     public class Providerlator : IMdxProvider
     {
-        AdomdConnection _connection;
+        private AdomdConnection _connection;
 
         public Providerlator(string connectionString)
         {
             _connection = new AdomdConnection(connectionString);
-        }
-
-        /// <summary>
-        /// Opens a connection if the current connection is closed or broken.
-        /// </summary>
-        void openConnection()
-        {
-            if (_connection.State == ConnectionState.Closed)
-            {
-                _connection.Open();
-            }
-
-            else if (_connection.State == ConnectionState.Broken)
-            {
-                _connection.Close();
-                _connection.Open();
-            }
-
-            else return;
         }
 
         public CellSet GetCellSet(string mdx)
@@ -67,16 +48,35 @@ namespace Percolator.AnalysisServices
             }
         }
 
-        AdomdCommand prepareCommand(string mdx)
+        public void Dispose()
+        {
+            this._connection.Dispose();
+        }
+
+        /// <summary>
+        /// Opens a connection if the current connection is closed or broken.
+        /// </summary>
+        private void openConnection()
+        {
+            if (this._connection.State == ConnectionState.Closed)
+            {
+                this._connection.Open();
+            }
+
+            else if (this._connection.State == ConnectionState.Broken)
+            {
+                this._connection.Close();
+                this._connection.Open();
+            }
+
+            else return;
+        }
+
+        private AdomdCommand prepareCommand(string mdx)
         {
             openConnection();
             var command = new AdomdCommand(mdx, _connection);
             return command;
-        }
-
-        public void Dispose()
-        {
-            _connection.Dispose();
         }
     }
 }

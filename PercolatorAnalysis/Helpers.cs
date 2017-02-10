@@ -22,6 +22,136 @@ namespace Percolator.AnalysisServices
 
     internal static class Helpers
     {
+        public static IEnumerable<T> ReturnFromReader<T>(this AdomdDataReader source) where T : new()
+        {
+            var type = typeof(T);
+            var schemaTable = source.GetSchemaTable();
+            var columnNames = schemaTable.Rows
+                .Cast<DataRow>()
+                .Select(x => x[0].ToString())
+                .ToArray();
+
+            var props = type.GetProperties()
+                .Where(x => System.Attribute.IsDefined(x, typeof(MapToAttribute)))
+                .Select(x => new
+                                 {
+                                     Attribute = x.GetCustomAttribute<MapToAttribute>(),
+                                     PropertyInfo = x
+                                 })
+                .Where(x => columnNames.Contains(x.Attribute.MdxColumn))
+                .OrderBy(x => x.Attribute.MdxColumn);
+
+            var bindingList = new Dictionary<ParameterExpression, MemberAssignment>();
+            var converterList = new TypeConverter[props.Count()];
+            var stringArrayParam = Expression.Parameter(typeof(string[]), "values");
+            var converterArrayParam = Expression.Parameter(typeof(TypeConverter[]), "converters");
+            var converter = typeof(TypeConverter).GetMethod("ConvertFromString", new [] { typeof(string) });
+
+            props.For((v, i) =>
+                {
+                    var prop = v.PropertyInfo;
+                    var paramExp = Expression.Parameter(prop.PropertyType, prop.Name);
+                    var arrayAssignment = Expression.ArrayIndex(stringArrayParam, Expression.Constant(i));
+                    var typeConverter = TypeDescriptor.GetConverter(prop.PropertyType);
+                    var converterArrayAssignment = Expression.ArrayIndex(converterArrayParam, Expression.Constant(i));
+                    var defaultValue = prop.PropertyType.GetDefault();
+                    var defaultConstant = Expression.Constant(defaultValue == null ? null : defaultValue.ToString(), typeof(string));
+                    var methodExp = Expression.Call(converterArrayAssignment, converter, Expression.Coalesce(arrayAssignment, defaultConstant));
+
+                    Expression.Bind(prop,
+                            Expression.Convert(methodExp, prop.PropertyType))
+                        .Finally(bind => bindingList.Add(paramExp, bind));
+
+                    converterList[i] = typeConverter;
+                });
+
+            var newExp = Expression.New(typeof(T));
+            var memberInit = Expression.MemberInit(newExp, bindingList.Values.ToArray());
+            var lambda = Expression.Lambda<Func<TypeConverter[], string[], T>>(memberInit, new[] { converterArrayParam, stringArrayParam });
+            var creatorMethod = lambda.Compile();
+
+            while(source.Read())
+            {
+                var rawResults = new string[columnNames.Length];
+
+                columnNames
+                    .OrderBy(x => x)
+                    .For((v, i) => rawResults[i] = source[v].ToString());
+
+                yield return creatorMethod(converterList, rawResults);
+            }
+        }
+
+        public static object GetDefault(this Type source)
+        {
+            if(source == null)
+                return null;
+
+            if (source.IsValueType)
+                return Activator.CreateInstance(source);
+
+            else if (source == typeof(string))
+                return String.Empty;
+
+            else
+                return null;
+        }
+
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            using (var rator = source.GetEnumerator())
+                while (rator.MoveNext())
+                    action(rator.Current);
+        }
+
+        public static void For<T>(this IEnumerable<T> source, Action<T, int> action)
+        {
+            var index = 0;
+            using (var rator = source.GetEnumerator())
+                while (rator.MoveNext())
+                    action(rator.Current, index++);
+        }
+
+        /// <summary>
+        /// Removes the occurance of the passed in string.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="removal"></param>
+        /// <returns></returns>
+        public static string Remove(this string source, params string[] removal)
+        {
+            var result = source;
+            foreach (var remove in removal)
+                result = result.Replace(remove, "");
+            return result;
+        }
+
+        public static Tout To<Tsource, Tout>(this Tsource source, Func<Tsource, Tout> function) => function(source);
+
+        public static Tout To<Tsource, T1, Tout>(this Tsource source, T1 in1, Func<Tsource, T1, Tout> function) => function(source, in1);
+
+        public static Tout To<Tsource, T1, T2, Tout>(this Tsource source, T1 in1, T2 in2, Func<Tsource, T1, T2, Tout> function) => function(source, in1, in2);
+
+        public static Tout To<Tsource, T1, T2, T3, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, Func<Tsource, T1, T2, T3, Tout> function) => function(source, in1, in2, in3);
+
+        public static Tout To<Tsource, T1, T2, T3, T4, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, Func<Tsource, T1, T2, T3, T4, Tout> function) => function(source, in1, in2, in3, in4);
+
+        public static Tout To<Tsource, T1, T2, T3, T4, T5, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, Func<Tsource, T1, T2, T3, T4, T5, Tout> function) => function(source, in1, in2, in3, in4, in5);
+
+        public static Tout To<Tsource, T1, T2, T3, T4, T5, T6, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, T6 in6, Func<Tsource, T1, T2, T3, T4, T5, T6, Tout> function) => function(source, in1, in2, in3, in4, in5, in6);
+
+        public static void Finally<Tsource>(this Tsource source, Action<Tsource> action) => action(source);
+
+        public static void Finally<Tsource, T1>(this Tsource source, T1 in1, Action<Tsource, T1> action) => action(source, in1);
+
+        public static void Finally<Tsource, T1, T2>(this Tsource source, T1 in1, T2 in2, Action<Tsource, T1, T2> action) => action(source, in1, in2);
+
+        public static void Finally<Tsource, T1, T2, T3>(this Tsource source, T1 in1, T2 in2, T3 in3, Action<Tsource, T1, T2, T3> action) => action(source, in1, in2, in3);
+
+        public static void Finally<Tsource, T1, T2, T3, T4>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, Action<Tsource, T1, T2, T3, T4> action) => action(source, in1, in2, in3, in4);
+
+        public static void Finally<Tsource, T1, T2, T3, T4, T5, T6>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, T6 in6, Action<Tsource, T1, T2, T3, T4, T5, T6> action) => action(source, in1, in2, in3, in4, in5, in6);
+
         internal static Expression StripQuotes(this Expression source)
         {
             var e = source;
@@ -54,7 +184,7 @@ namespace Percolator.AnalysisServices
 
         internal static byte DetermineAxis(this MemberInfo mem)
         {
-            switch(mem.Name.ToLower())
+            switch (mem.Name.ToLower())
             {
                 case "oncolumns":
                     return 0;
@@ -96,7 +226,7 @@ namespace Percolator.AnalysisServices
                 var obj = method(t);
                 return obj;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return null;
             }
@@ -189,135 +319,5 @@ namespace Percolator.AnalysisServices
                 yield return creator(converterList, results);
             }
         }
-
-        public static IEnumerable<T> ReturnFromReader<T>(this AdomdDataReader source) where T : new()
-        {
-            var type = typeof(T);
-            var schemaTable = source.GetSchemaTable();
-            var columnNames = schemaTable.Rows
-                .Cast<DataRow>()
-                .Select(x => x[0].ToString())
-                .ToArray();
-
-            var props = type.GetProperties()
-                .Where(x => System.Attribute.IsDefined(x, typeof(MapToAttribute)))
-                .Select(x => new
-                {
-                    Attribute = x.GetCustomAttribute<MapToAttribute>(),
-                    PropertyInfo = x
-                })
-                .Where(x => columnNames.Contains(x.Attribute.MdxColumn))
-                .OrderBy(x => x.Attribute.MdxColumn);
-
-            var bindingList = new Dictionary<ParameterExpression, MemberAssignment>();
-            var converterList = new TypeConverter[props.Count()];
-            var stringArrayParam = Expression.Parameter(typeof(string[]), "values");
-            var converterArrayParam = Expression.Parameter(typeof(TypeConverter[]), "converters");
-            var converter = typeof(TypeConverter).GetMethod("ConvertFromString", new [] { typeof(string) });
-
-            props.For((v, i) =>
-                {
-                    var prop = v.PropertyInfo;
-                    var paramExp = Expression.Parameter(prop.PropertyType, prop.Name);
-                    var arrayAssignment = Expression.ArrayIndex(stringArrayParam, Expression.Constant(i));
-                    var typeConverter = TypeDescriptor.GetConverter(prop.PropertyType);
-                    var converterArrayAssignment = Expression.ArrayIndex(converterArrayParam, Expression.Constant(i));
-                    var defaultValue = prop.PropertyType.GetDefault();
-                    var defaultConstant = Expression.Constant(defaultValue == null ? null : defaultValue.ToString(), typeof(string));
-                    var methodExp = Expression.Call(converterArrayAssignment, converter, Expression.Coalesce(arrayAssignment, defaultConstant));
-
-                    Expression.Bind(prop,
-                        Expression.Convert(methodExp, prop.PropertyType))
-                        .Finally(bind => bindingList.Add(paramExp, bind));
-
-                    converterList[i] = typeConverter;
-                });
-
-            var newExp = Expression.New(typeof(T));
-            var memberInit = Expression.MemberInit(newExp, bindingList.Values.ToArray());
-            var lambda = Expression.Lambda<Func<TypeConverter[], string[], T>>(memberInit, new[] { converterArrayParam, stringArrayParam });
-            var creatorMethod = lambda.Compile();
-
-            while(source.Read())
-            {
-                var rawResults = new string[columnNames.Length];
-
-                columnNames
-                    .OrderBy(x => x)
-                    .For((v, i) => rawResults[i] = source[v].ToString());
-
-                yield return creatorMethod(converterList, rawResults);
-            }
-        }
-
-        public static object GetDefault(this Type source)
-        {
-            if(source == null)
-                return null;
-
-            if (source.IsValueType)
-                return Activator.CreateInstance(source);
-
-            else if (source == typeof(string))
-                return String.Empty;
-
-            else
-                return null;
-        }
-
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
-        {
-            using (var rator = source.GetEnumerator())
-                while (rator.MoveNext())
-                    action(rator.Current);
-        }
-
-        public static void For<T>(this IEnumerable<T> source, Action<T, int> action)
-        {
-            var index = 0;
-            using (var rator = source.GetEnumerator())
-                while (rator.MoveNext())
-                    action(rator.Current, index++);
-        }
-
-        /// <summary>
-        /// Removes the occurance of the passed in string.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="removal"></param>
-        /// <returns></returns>
-        public static string Remove(this string source, params string[] removal)
-        {
-            var result = source;
-            foreach (var remove in removal)
-                result = result.Replace(remove, "");
-            return result;
-        }
-
-        public static Tout To<Tsource, Tout>(this Tsource source, Func<Tsource, Tout> function) => function(source);
-
-        public static Tout To<Tsource, T1, Tout>(this Tsource source, T1 in1, Func<Tsource, T1, Tout> function) => function(source, in1);
-
-        public static Tout To<Tsource, T1, T2, Tout>(this Tsource source, T1 in1, T2 in2, Func<Tsource, T1, T2, Tout> function) => function(source, in1, in2);
-
-        public static Tout To<Tsource, T1, T2, T3, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, Func<Tsource, T1, T2, T3, Tout> function) => function(source, in1, in2, in3);
-
-        public static Tout To<Tsource, T1, T2, T3, T4, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, Func<Tsource, T1, T2, T3, T4, Tout> function) => function(source, in1, in2, in3, in4);
-
-        public static Tout To<Tsource, T1, T2, T3, T4, T5, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, Func<Tsource, T1, T2, T3, T4, T5, Tout> function) => function(source, in1, in2, in3, in4, in5);
-
-        public static Tout To<Tsource, T1, T2, T3, T4, T5, T6, Tout>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, T6 in6, Func<Tsource, T1, T2, T3, T4, T5, T6, Tout> function) => function(source, in1, in2, in3, in4, in5, in6);
-
-        public static void Finally<Tsource>(this Tsource source, Action<Tsource> action) => action(source);
-
-        public static void Finally<Tsource, T1>(this Tsource source, T1 in1, Action<Tsource, T1> action) => action(source, in1);
-
-        public static void Finally<Tsource, T1, T2>(this Tsource source, T1 in1, T2 in2, Action<Tsource, T1, T2> action) =>action(source, in1, in2);
-
-        public static void Finally<Tsource, T1, T2, T3>(this Tsource source, T1 in1, T2 in2, T3 in3, Action<Tsource, T1, T2, T3> action) => action(source, in1, in2, in3);
-
-        public static void Finally<Tsource, T1, T2, T3, T4>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, Action<Tsource, T1, T2, T3, T4> action) =>action(source, in1, in2, in3, in4);
-
-        public static void Finally<Tsource, T1, T2, T3, T4, T5, T6>(this Tsource source, T1 in1, T2 in2, T3 in3, T4 in4, T5 in5, T6 in6, Action<Tsource, T1, T2, T3, T4, T5, T6> action) => action(source, in1, in2, in3, in4, in5, in6);
     }
 }

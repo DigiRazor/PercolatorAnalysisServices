@@ -17,8 +17,29 @@ namespace Percolator.AnalysisServices.Linq
     /// </summary>
     public class Member : ICubeObject
     {
-        List<object> _values;
-       
+        private List<object> _values;
+
+        /// <summary>
+        /// Representation of a MDX 'Member'.
+        /// </summary>
+        /// <param name="objs">The cube objects to assemble into a member.</param>
+        public Member(params ICubeObject[] objs)
+        {
+            this._values = new List<object>();
+            foreach (object val in objs)
+                this._values.Add(val);
+        }
+
+        /// <summary>
+        /// Representation of a MDX 'Member'.
+        /// </summary>
+        /// <param name="obj">String representation of a member.</param>
+        public Member(string obj)
+        {
+            this._values = new List<object>();
+            this._values.Add(obj);
+        }
+
         /// <summary>
         /// Returns the set of children of a specified member.
         /// </summary>
@@ -104,68 +125,6 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         public string Tag { get; set; }
 
-        /// <summary>
-        /// Representation of a MDX 'Member'.
-        /// </summary>
-        /// <param name="objs">The cube objects to assemble into a member.</param>
-        public Member(params ICubeObject[] objs)
-        {
-            _values = new List<object>();
-            foreach (object val in objs)
-                _values.Add(val);
-        }
-
-        /// <summary>
-        /// Representation of a MDX 'Member'.
-        /// </summary>
-        /// <param name="obj">String representation of a member.</param>
-        public Member(string obj)
-        {
-            _values = new List<object>();
-            _values.Add(obj);
-        }
-
-        /// <summary>
-        /// Mdx 'Item' function. Returns a member from a specified tuple.
-        /// </summary>
-        /// <param name="itemNumber"></param>
-        /// <returns></returns>
-        public Member Item(int itemNumber) => $"{assembleMember()}.Item({itemNumber})";
-
-        /// <summary>
-        /// MDX 'Lead' function. Returns the member that is a specified number of positions following a specified member along the member's level.
-        /// </summary>
-        /// <param name="leadCount">A valid numeric expression that specifies a number of member positions.</param>
-        /// <returns></returns>
-        public Member Lead(int leadCount) => $"{assembleMember()}.Lead({leadCount})";
-
-        /// <summary>
-        /// MDX 'Lag' function. Returns the member that is a specified number of positions before a specified member at the member's level.
-        /// </summary>
-        /// <param name="lagCount">A valid numeric expression that specifies the number of member positions to lag.</param>
-        /// <returns></returns>
-        public Member Lag(int lagCount) => $"{assembleMember()}.Lag({lagCount})";
-
-        /// <summary>
-        /// MDX 'Properties' function. Returns the property from the Member Properties list.
-        /// </summary>
-        /// <param name="property"></param>
-        /// <returns></returns>
-        public Member Properties(string property) => $"{assembleMember()}.Properties(\"{property}\")";
-
-        /// <summary>
-        /// Default representation of an extention function in MDX.
-        /// </summary>
-        /// <param name="function">The name or syntax of the function.</param>
-        /// <returns></returns>
-        public Member Function(string function) => $"{this}.{function}";
-
-        /// <summary>
-        /// Returns the MDX syntax of this member.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString() => assembleMember();
-
         public static implicit operator string(Member mem) => mem.ToString();
 
         public static implicit operator Member(string str) => new Member(str);
@@ -209,7 +168,48 @@ namespace Percolator.AnalysisServices.Linq
 
         public static Member operator /(Member m1, Member m2) => $"({m1} / {m2})";
 
-        string assembleMember()
+        /// <summary>
+        /// Mdx 'Item' function. Returns a member from a specified tuple.
+        /// </summary>
+        /// <param name="itemNumber"></param>
+        /// <returns></returns>
+        public Member Item(int itemNumber) => $"{this.assembleMember()}.Item({itemNumber})";
+
+        /// <summary>
+        /// MDX 'Lead' function. Returns the member that is a specified number of positions following a specified member along the member's level.
+        /// </summary>
+        /// <param name="leadCount">A valid numeric expression that specifies a number of member positions.</param>
+        /// <returns></returns>
+        public Member Lead(int leadCount) => $"{this.assembleMember()}.Lead({leadCount})";
+
+        /// <summary>
+        /// MDX 'Lag' function. Returns the member that is a specified number of positions before a specified member at the member's level.
+        /// </summary>
+        /// <param name="lagCount">A valid numeric expression that specifies the number of member positions to lag.</param>
+        /// <returns></returns>
+        public Member Lag(int lagCount) => $"{this.assembleMember()}.Lag({lagCount})";
+
+        /// <summary>
+        /// MDX 'Properties' function. Returns the property from the Member Properties list.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public Member Properties(string property) => $"{this.assembleMember()}.Properties(\"{property}\")";
+
+        /// <summary>
+        /// Default representation of an extention function in MDX.
+        /// </summary>
+        /// <param name="function">The name or syntax of the function.</param>
+        /// <returns></returns>
+        public Member Function(string function) => $"{this}.{function}";
+
+        /// <summary>
+        /// Returns the MDX syntax of this member.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => this.assembleMember();
+
+        private string assembleMember()
         {
             var sb = new StringBuilder();
             if (_values.Count > 1)
@@ -224,7 +224,7 @@ namespace Percolator.AnalysisServices.Linq
             return sb.ToString();
         }
 
-        string assembleExtension(string str)
+        private string assembleExtension(string str)
         {
             return $"{assembleMember()}.{str}";
         }

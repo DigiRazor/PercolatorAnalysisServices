@@ -22,17 +22,15 @@ namespace Percolator.AnalysisServices.Linq
     /// <typeparam name="T"></typeparam>
     public class Cube<T> : IMdxQueryable<T>
     {
-        IMdxProvider _provider;
+        private IMdxProvider _provider;
 
-        Expression _expression;
+        private Expression _expression;
 
-        List<Axis<T>> _axisGroups;
+        private List<Axis<T>> _axisGroups;
 
-        List<MdxComponent> _components;
+        private List<MdxComponent> _components;
 
-        byte _createdDepth;
-
-        public IMdxProvider Provider { get { return _provider; } }
+        private byte _createdDepth;
 
         /// <summary>
         /// Creates a new Cube to query against.
@@ -43,23 +41,43 @@ namespace Percolator.AnalysisServices.Linq
             if (provider == null)
                 throw new ArgumentNullException("provider");
 
-            _provider = provider;
-            _createdDepth = 0;
-            _expression = Expression.Constant(this);
-            _axisGroups = new List<Axis<T>>();
-            _components = new List<MdxComponent>();
+            this._provider = provider;
+            this._createdDepth = 0;
+            this._expression = Expression.Constant(this);
+            this._axisGroups = new List<Axis<T>>();
+            this._components = new List<MdxComponent>();
+        }
+
+        public IMdxProvider Provider
+        {
+            get
+            {
+                return _provider;
+            }
         }
 
         #region IMdxQueryable<T> Members
         /// <summary>
         /// The current collection of axes waiting to be queried against.
         /// </summary>
-        public List<Axis<T>> AxisCollection { get { return _axisGroups; } }
+        public List<Axis<T>> AxisCollection
+        {
+            get
+            {
+                return _axisGroups;
+            }
+        }
 
         /// <summary>
         /// The current collection of Mdx components (Slicers, Subcubes, etc) that are waiting to be queried against.
         /// </summary>
-        public List<MdxComponent> Components { get { return _components; } }
+        public List<MdxComponent> Components
+        {
+            get
+            {
+                return _components;
+            }
+        }
 
         /// <summary>
         /// Applies mdx objects to an axis and stores the axis in this object to be queried.

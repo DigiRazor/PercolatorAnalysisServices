@@ -21,7 +21,7 @@ namespace Percolator.AnalysisServices
 
     internal class Mapperlator<T> : IEnumerable<T>
     {
-        IEnumerator<T> _rator;
+        private IEnumerator<T> _rator;
 
         internal Mapperlator(AdomdDataReader reader)
         {
@@ -32,27 +32,27 @@ namespace Percolator.AnalysisServices
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 
-        class Enumerlator : IEnumerator<T>
+        private class Enumerlator : IEnumerator<T>
         {
-            delegate T Creatorlator(TypeConverter[] converters, string[] values);
+            private AdomdDataReader _reader;
 
-            AdomdDataReader _reader;
+            private Creatorlator _creator;
 
-            Creatorlator _creator;
+            private TypeConverter[] _converters;
 
-            TypeConverter[] _converters;
-
-            int[] _ornials;
-
-            public T Current { get; private set; }
-
-            object System.Collections.IEnumerator.Current => Current; 
+            private int[] _ornials;
 
             public Enumerlator(AdomdDataReader reader)
             {
-                _reader = reader;
-                init();
+                this._reader = reader;
+                this.init();
             }
+
+            private delegate T Creatorlator(TypeConverter[] converters, string[] values);
+
+            public T Current { get; private set; }
+
+            object System.Collections.IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
@@ -66,7 +66,14 @@ namespace Percolator.AnalysisServices
                     return false;
             }
 
-            T get()
+            public void Reset()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void Dispose() => this._reader.Dispose();
+
+            private T get()
             {
                 var rawValues = new string[_reader.FieldCount];
                 
@@ -76,7 +83,7 @@ namespace Percolator.AnalysisServices
                 return _creator(_converters, rawValues);
             }
 
-            void init()
+            private void init()
             {
                 var type = typeof(T);
                 var schema = _reader.GetSchemaTable();
@@ -133,13 +140,6 @@ namespace Percolator.AnalysisServices
                 var lambda = Expression.Lambda<Creatorlator>(memberInit, new[] { converterArrayParam, stringArrayParam });
                 _creator = lambda.Compile();
             }
-
-            public void Reset()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Dispose() =>_reader.Dispose();
         }
     }
 }

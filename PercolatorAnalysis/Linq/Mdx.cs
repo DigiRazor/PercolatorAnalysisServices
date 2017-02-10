@@ -89,7 +89,7 @@ namespace Percolator.AnalysisServices.Linq
     /// </summary>
     public static class Mdx
     {
-        static StringBuilder sb = new StringBuilder();
+        private static StringBuilder sb = new StringBuilder();
 
         /// <summary>
         /// A default method for assembling a MDX function to be used in a MDX query.
@@ -473,7 +473,7 @@ namespace Percolator.AnalysisServices.Linq
         #endregion
 
         #region Privates
-        static Expression visit(Expression node)
+        private static Expression visit(Expression node)
         {
             switch(node.NodeType)
             {
@@ -503,19 +503,19 @@ namespace Percolator.AnalysisServices.Linq
             return node;
         }
 
-        static Expression visitConstant(ConstantExpression node)
+        private static Expression visitConstant(ConstantExpression node)
         {
             sb.Append(node.Value);
             return node;
         }
 
-        static Expression visitMember(MemberExpression node)
+        private static Expression visitMember(MemberExpression node)
         {
             sb.Append(getObjectValue(node));
             return node;
         }
 
-        static Expression visitBinary(BinaryExpression node)
+        private static Expression visitBinary(BinaryExpression node)
         {
             visit(node.Left);           
             switch(node.NodeType)
@@ -559,7 +559,7 @@ namespace Percolator.AnalysisServices.Linq
             return node;
         }
 
-        static string getObjectValue(MemberExpression member)
+        private static string getObjectValue(MemberExpression member)
         {
             if (member.Expression.NodeType == ExpressionType.Constant)
             {

@@ -19,6 +19,18 @@ namespace Percolator.AnalysisServices
 
     internal class Translation
     {
+        public Translation(byte type, string value)
+            : this(type, value, false)
+        {
+        }
+
+        public Translation(byte type, string value, bool isNonEmpty)
+        {
+            this.Type = type;
+            this.Value = value;
+            this.IsNonEmpty = isNonEmpty;
+        }
+
         public byte Type { get; set; }
 
         public string Name { get; set; }
@@ -28,63 +40,51 @@ namespace Percolator.AnalysisServices
         public byte? DeclarationOrder { get; set; }
 
         public bool IsNonEmpty { get; set; }
-
-        public Translation(byte type, string value)
-            : this(type, value, false)
-        {
-        }
-
-        public Translation(byte type, string value, bool isNonEmpty)
-        {
-            Type = type;
-            Value = value;
-            IsNonEmpty = isNonEmpty;
-        }
     }
 
     internal class Percolator<T>
     {
-        const byte _FROM = 191;
-        const byte _WHERE = 192;
-        const byte _WMEMBER = 193;
-        const byte _WSET = 194;
-        const byte _SUBCUBE = 195;
-        byte _setDepth;
-        byte _memberDepth;
-        T _cube;
-        StringBuilder _sb;
-        List<Axis<T>> _axis;
-        Axis<T> _currentAxisObject;
-        List<MdxComponent> _components;
-        List<Translation> _translations;
-        byte _currentAxis;
-        Component? _currentComponent;
-
-        public string MdxCommand { get; private set; }
+        private const byte _FROM = 191;
+        private const byte _WHERE = 192;
+        private const byte _WMEMBER = 193;
+        private const byte _WSET = 194;
+        private const byte _SUBCUBE = 195;
+        private byte _setDepth;
+        private byte _memberDepth;
+        private T _cube;
+        private StringBuilder _sb;
+        private List<Axis<T>> _axis;
+        private Axis<T> _currentAxisObject;
+        private List<MdxComponent> _components;
+        private List<Translation> _translations;
+        private byte _currentAxis;
+        private Component? _currentComponent;
 
         internal Percolator(List<Axis<T>> axis, List<MdxComponent> components)
         {
-            _cube = typeof(T).GetCubeInstance<T>();
+            this._cube = typeof(T).GetCubeInstance<T>();
 
-            _setDepth = 0;
-            _memberDepth = 0;
-            _sb = new StringBuilder();
-            _translations = new List<Translation>();
-            _components = components;
-            _axis = axis;
-            _currentAxis = axis.Count == 0 ? (byte)0 : axis.Min(x => x.AxisNumber);
-            _currentComponent = null;
-            MdxCommand = translate();
+            this._setDepth = 0;
+            this._memberDepth = 0;
+            this._sb = new StringBuilder();
+            this._translations = new List<Translation>();
+            this._components = components;
+            this._axis = axis;
+            this._currentAxis = axis.Count == 0 ? (byte)0 : axis.Min(x => x.AxisNumber);
+            this._currentComponent = null;
+            this.MdxCommand = this.translate();
         }
 
-        string translate()
+        public string MdxCommand { get; private set; }
+
+        private string translate()
         {
             try
             {
                 string from = typeof(T).GetCustomAttribute<CubeAttribute>().Tag;
                 _translations.Add(new Translation(_FROM, string.Format("FROM [{0}]", from)));
             }
-            catch(NullReferenceException e)
+            catch (NullReferenceException e)
             {
                 throw new PercolatorException(string.Format("The cube type of '{0}' is not queryable", typeof(T).Name));
             }
@@ -132,13 +132,13 @@ namespace Percolator.AnalysisServices
             }
         }
 
-        void prepareWhere(Expression node)
+        private void prepareWhere(Expression node)
         {
             var obj = node.GetValue<T>();
             setTranslation(obj);
         }
 
-        void prepareCalculatedMember(Expression node)
+        private void prepareCalculatedMember(Expression node)
         {
             var memberExp = ((LambdaExpression)node).Body as MemberExpression;
             var obj = node.GetValue<T>();
@@ -169,7 +169,7 @@ namespace Percolator.AnalysisServices
             _translations.Add(new Translation(_currentAxis, obj.ToString()) { Name = name });            
         }
 
-        void prepareCalculatedSet(Expression node)
+        private void prepareCalculatedSet(Expression node)
         {
             var memberExp = ((LambdaExpression)node).Body as MemberExpression;
             var obj = node.GetValue<T>();
@@ -200,7 +200,7 @@ namespace Percolator.AnalysisServices
             _translations.Add(new Translation(_currentAxis, obj.ToString()) { Name = name });    
         }
 
-        void prepareSubCube(Expression node)
+        private void prepareSubCube(Expression node)
         {
             var val = node.GetValue<T>();
             var currentSubcube = _translations.FirstOrDefault(x => x.Type == _SUBCUBE);
@@ -228,14 +228,14 @@ namespace Percolator.AnalysisServices
             }
         }
 
-        void prepareAxis(Expression node)
+        private void prepareAxis(Expression node)
         {
             var obj = node.GetValue<T>();
             var axis = _axis.FirstOrDefault(x => x.AxisNumber == _currentAxis);
             setTranslation(obj, _currentAxisObject.IsNonEmpty);
         }
 
-        void setTranslation(object obj)
+        private void setTranslation(object obj)
         {
             if (obj != null)
             {
@@ -247,7 +247,7 @@ namespace Percolator.AnalysisServices
             }
         }
 
-        void setTranslation(object obj, bool isNonEmpty)
+        private void setTranslation(object obj, bool isNonEmpty)
         {
             if (obj != null)
             {
@@ -259,7 +259,7 @@ namespace Percolator.AnalysisServices
             }
         }
 
-        byte getComponentValue(Component component)
+        private byte getComponentValue(Component component)
         {
             switch (component)
             {
@@ -284,7 +284,7 @@ namespace Percolator.AnalysisServices
             }
         }
 
-        bool tryGetTagName(MemberExpression member, out string name)
+        private bool tryGetTagName(MemberExpression member, out string name)
         {
             if(member == null)
             {
@@ -301,7 +301,7 @@ namespace Percolator.AnalysisServices
             return false;
         }
 
-        string assembleTranslations()
+        private string assembleTranslations()
         {
             var sb = new StringBuilder(Comment.PAS_HEADER).AppendLine();
             sb.AppendLine();

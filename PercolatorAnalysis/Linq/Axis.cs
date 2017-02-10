@@ -15,16 +15,6 @@ namespace Percolator.AnalysisServices.Linq
 
     public class Axis<T> : ICubeObject
     {
-        public byte AxisNumber { get; set; }
-
-        public bool IsNonEmpty { get; set; }
-
-        internal Expression Creator { get; private set; }
-
-        internal List<string> WithMembers { get; set; }
-
-        internal List<string> WithSets { get; set; }
-
         public Axis(byte axisNumber) : this(axisNumber, false)
         {
         }
@@ -36,11 +26,26 @@ namespace Percolator.AnalysisServices.Linq
 
         internal Axis(byte axisNumber, bool isNonEmpty, Expression axisCreator)
         {
-            AxisNumber = axisNumber;
-            IsNonEmpty = isNonEmpty;
-            Creator = axisCreator;
-            WithMembers = new List<string>();
-            WithSets = new List<string>();
+            this.AxisNumber = axisNumber;
+            this.IsNonEmpty = isNonEmpty;
+            this.Creator = axisCreator;
+            this.WithMembers = new List<string>();
+            this.WithSets = new List<string>();
+        }
+
+        public byte AxisNumber { get; set; }
+
+        public bool IsNonEmpty { get; set; }
+
+        internal Expression Creator { get; private set; }
+
+        internal List<string> WithMembers { get; set; }
+
+        internal List<string> WithSets { get; set; }
+
+        public static implicit operator string(Axis<T> axis)
+        {
+            return axis.ToString();
         }
 
         public override string ToString()
@@ -76,11 +81,6 @@ namespace Percolator.AnalysisServices.Linq
             sb.Append("}")
                 .Append($" ON {AxisNumber}");
             return sb.ToString();
-        }
-
-        public static implicit operator string(Axis<T> axis)
-        {
-            return axis.ToString();
         }
 
         public Axis<T> AssembleAxis(Expression<Func<T, ICubeObject>> axisCreator)

@@ -18,12 +18,23 @@ namespace Percolator.AnalysisServices.Attributes
         /// <summary>
         /// 
         /// </summary>
-        public string Tag { get; set; }
+        /// <param name="tag"></param>
+        public TagAttribute(string tag)
+        {
+            this.Tag = tag;
+            this.Ordinal = 1;
+        }
 
         /// <summary>
         /// 
         /// </summary>
-        public int Ordinal { get; set; }
+        /// <param name="tag"></param>
+        /// <param name="ordinal"></param>
+        public TagAttribute(string tag, int ordinal)
+        {
+            this.Tag = tag;
+            this.Ordinal = ordinal;
+        }
 
         /// <summary>
         /// 
@@ -35,22 +46,11 @@ namespace Percolator.AnalysisServices.Attributes
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="tag"></param>
-        public TagAttribute(string tag)
-        {
-            Tag = tag;
-            Ordinal = 1;
-        }
+        public string Tag { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="ordinal"></param>
-        public TagAttribute(string tag, int ordinal)
-        {
-            Tag = tag;
-            Ordinal = ordinal;
-        }
+        public int Ordinal { get; set; }
     }
 }

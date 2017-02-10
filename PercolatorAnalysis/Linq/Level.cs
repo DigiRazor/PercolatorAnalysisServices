@@ -16,6 +16,25 @@ namespace Percolator.AnalysisServices.Linq
     public class Level : Hierarchy
     {
         /// <summary>
+        /// Creates a new level.
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="ordinalLevel"></param>
+        public Level(string tag, int ordinalLevel) : base(tag)
+        {
+            this.OrdinalLevel = ordinalLevel;
+        }
+
+        /// <summary>
+        /// Creates a new level.
+        /// </summary>
+        /// <param name="str"></param>
+        public Level(string str) : base (str)
+        {
+            this.OrdinalLevel = default(int);
+        }
+
+        /// <summary>
         /// The level's ordinal position in this hierachy.
         /// </summary>
         public int OrdinalLevel { get; private set; }
@@ -36,26 +55,7 @@ namespace Percolator.AnalysisServices.Linq
         /// </summary>
         /// <param name="hierarchyMemberNames">The members of the level. Chain the members together to create the entire hierarchy level member.</param>
         /// <returns></returns>
-        public Member this[params string[] hierarchyMemberNames] => memberFrom(hierarchyMemberNames); 
-
-        /// <summary>
-        /// Creates a new level.
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="ordinalLevel"></param>
-        public Level(string tag, int ordinalLevel) : base(tag)
-        {
-            OrdinalLevel = ordinalLevel;
-        }
-
-        /// <summary>
-        /// Creates a new level.
-        /// </summary>
-        /// <param name="str"></param>
-        public Level(string str) : base (str)
-        {
-            OrdinalLevel = default(int);
-        }
+        public Member this[params string[] hierarchyMemberNames] => memberFrom(hierarchyMemberNames);
 
         /// <summary>
         /// Implict string conversion for the level.
@@ -72,9 +72,9 @@ namespace Percolator.AnalysisServices.Linq
         /// <returns></returns>
         public override string ToString() => assembleSet();
 
-        string assembleExtension(string str) => $"{assembleSet()}.{str}";
+        private string assembleExtension(string str) => $"{assembleSet()}.{str}";
 
-        Member memberFrom(string[] memberNames)
+        private Member memberFrom(string[] memberNames)
         {
             string att = assembleSet();
             var members = new List<string>(memberNames.Length);
