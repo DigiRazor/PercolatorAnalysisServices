@@ -13,7 +13,7 @@ namespace Percolator.AnalysisServices.Attributes
     /// Tags a property as an Analysis Services user hierarchy
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class HierarchyAttribute : global::System.Attribute
+    public class HierarchyAttribute : Attribute
     {
     }
 }

@@ -13,7 +13,7 @@ namespace Percolator.AnalysisServices.Attributes
     /// Stores the information for an attribute or level.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
-    public sealed class TagAttribute : global::System.Attribute
+    public sealed class TagAttribute : Attribute
     {
         /// <summary>
         /// 

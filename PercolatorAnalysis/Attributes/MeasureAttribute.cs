@@ -13,7 +13,7 @@ namespace Percolator.AnalysisServices.Attributes
     /// Tags a property as an Analysis Services measure.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class MeasureAttribute : global::System.Attribute
+    public class MeasureAttribute : Attribute
     {
         /// <summary>
         /// The name of the measure.

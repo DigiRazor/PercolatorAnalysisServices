@@ -13,7 +13,7 @@ namespace Percolator.AnalysisServices.Attributes
     /// Tags the class as an Analysis Services dimension
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-    public class DimensionAttribute : global::System.Attribute
+    public class DimensionAttribute : Attribute
     {
     }
 }

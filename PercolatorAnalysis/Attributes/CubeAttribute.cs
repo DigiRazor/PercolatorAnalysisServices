@@ -13,7 +13,7 @@ namespace Percolator.AnalysisServices.Attributes
     /// Tags the class as an Analysis Services cube.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-    public class CubeAttribute : global::System.Attribute
+    public class CubeAttribute : Attribute
     {
         public string Tag { get; set; }
     }
