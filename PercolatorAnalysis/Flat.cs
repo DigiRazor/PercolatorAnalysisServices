@@ -5,22 +5,24 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using Microsoft.AnalysisServices.AdomdClient;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Percolator.AnalysisServices
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Microsoft.AnalysisServices.AdomdClient;
+
     internal class Flat
     {
-        public Dictionary<string, string> PositionValues { get; set; }
-        public Dictionary<string, object> MeasureValues { get; set; }
-
-        Flat()
+        private Flat()
         {
-            MeasureValues = new Dictionary<string, object>();
-            PositionValues = new Dictionary<string, string>();
+            this.MeasureValues = new Dictionary<string, object>();
+            this.PositionValues = new Dictionary<string, string>();
         }
+
+        public Dictionary<string, string> PositionValues { get; set; }
+
+        public Dictionary<string, object> MeasureValues { get; set; }
 
         public static IEnumerable<Flat> Flatten(CellSet cellSet)
         {
@@ -63,17 +65,19 @@ namespace Percolator.AnalysisServices
                 yield return flat;
             }
         }
-        struct MemberPair
-        {
-            public string Level { get; set; }
-            public string Member { get; set; }
 
+        private struct MemberPair
+        {
             public MemberPair(string level, string member)
                 : this()
             {
-                Level = level;
-                Member = member;
+                this.Level = level;
+                this.Member = member;
             }
+
+            public string Level { get; set; }
+
+            public string Member { get; set; }
         }
     }
 }

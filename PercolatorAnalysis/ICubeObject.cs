@@ -5,7 +5,6 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-
 namespace Percolator.AnalysisServices
 {
     /// <summary>
@@ -13,6 +12,5 @@ namespace Percolator.AnalysisServices
     /// </summary>
     public interface ICubeObject
     {
-
     }
 }

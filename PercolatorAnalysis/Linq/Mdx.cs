@@ -5,16 +5,16 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Reflection;
-
 namespace Percolator.AnalysisServices.Linq
 {
-    using Percolator.AnalysisServices.Attributes;
+    using System;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Text;
+
     using Percolator.AnalysisServices;
+    using Percolator.AnalysisServices.Attributes;
 
     /// <summary>
     /// The order type for the MDX 'Order' function.
@@ -24,20 +24,24 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Orders in ascending order.
         /// </summary>
-        ASC, 
+        ASC,
+
         /// <summary>
         /// Orders in descending order.
         /// </summary>
-        DESC, 
+        DESC,
+
         /// <summary>
         /// Orders in ascending order, breaking the hierarchy.
         /// </summary>
-        BASC, 
+        BASC,
+
         /// <summary>
         /// Orders in descending order, breaking the hierarchy.
         /// </summary>
         BDESC 
-    };
+    }
+
     /// <summary>
     /// The count type for the MDX 'Count' function.
     /// </summary>
@@ -46,12 +50,14 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Excludes empty cells.
         /// </summary>
-        ExcludeEmpty, 
+        ExcludeEmpty,
+
         /// <summary>
         /// Includes empty cells. This is the default selection.
         /// </summary>
         IncludeEmpty 
-    };
+    }
+
     /// <summary>
     /// The HINT type for the MDX 'Filter' function.
     /// </summary>
@@ -60,15 +66,18 @@ namespace Percolator.AnalysisServices.Linq
         /// <summary>
         /// Eager
         /// </summary>
-        Eager, 
+        Eager,
+
         /// <summary>
         /// Strict
         /// </summary>
-        Strict, 
+        Strict,
+
         /// <summary>
         /// Lazy
         /// </summary>
-        Lazy, 
+        Lazy,
+
         /// <summary>
         /// No HINT. Does not apply a HINT to the returned filter expression.
         /// </summary>
@@ -80,7 +89,7 @@ namespace Percolator.AnalysisServices.Linq
     /// </summary>
     public static class Mdx
     {
-        static StringBuilder sb = new StringBuilder();
+        private static StringBuilder sb = new StringBuilder();
 
         /// <summary>
         /// A default method for assembling a MDX function to be used in a MDX query.
@@ -95,7 +104,7 @@ namespace Percolator.AnalysisServices.Linq
 
             paramz
                 .Select(x => x.ToString())
-                .Aggregate((a, b) => $"{0}, {1}")
+                .Aggregate((a, b) => $"{a}, {b}")
                 .To(funcBuilder.Append);
 
             funcBuilder.AppendLine(")");
@@ -376,8 +385,7 @@ namespace Percolator.AnalysisServices.Linq
         /// <param name="hint1">The HINT type associated with the first expression.</param>
         /// <param name="hint2">The HINT type associated with the second expression.</param>
         /// <returns></returns>
-        public static Member IIf(Expression<Func<bool>> logicalExpression,
-            object expression1, object expression2, HINT hint1, HINT hint2)
+        public static Member IIf(Expression<Func<bool>> logicalExpression, object expression1, object expression2, HINT hint1, HINT hint2)
         {
             visit(logicalExpression.Body);
             var logical = sb.ToString();
@@ -465,7 +473,7 @@ namespace Percolator.AnalysisServices.Linq
         #endregion
 
         #region Privates
-        static Expression visit(Expression node)
+        private static Expression visit(Expression node)
         {
             switch(node.NodeType)
             {
@@ -495,19 +503,19 @@ namespace Percolator.AnalysisServices.Linq
             return node;
         }
 
-        static Expression visitConstant(ConstantExpression node)
+        private static Expression visitConstant(ConstantExpression node)
         {
             sb.Append(node.Value);
             return node;
         }
 
-        static Expression visitMember(MemberExpression node)
+        private static Expression visitMember(MemberExpression node)
         {
             sb.Append(getObjectValue(node));
             return node;
         }
 
-        static Expression visitBinary(BinaryExpression node)
+        private static Expression visitBinary(BinaryExpression node)
         {
             visit(node.Left);           
             switch(node.NodeType)
@@ -551,7 +559,7 @@ namespace Percolator.AnalysisServices.Linq
             return node;
         }
 
-        static string getObjectValue(MemberExpression member)
+        private static string getObjectValue(MemberExpression member)
         {
             if (member.Expression.NodeType == ExpressionType.Constant)
             {

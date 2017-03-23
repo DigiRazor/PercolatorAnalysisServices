@@ -5,75 +5,87 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using Microsoft.AnalysisServices.AdomdClient;
-using Percolator.AnalysisServices.Attributes;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-
 namespace Percolator.AnalysisServices
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Reflection;
+
+    using Microsoft.AnalysisServices.AdomdClient;
+
+    using Percolator.AnalysisServices.Attributes;
+
     internal class Mapperlator<T> : IEnumerable<T>
     {
-        IEnumerator<T> _rator;
+        private IEnumerator<T> _rator;
 
         internal Mapperlator(AdomdDataReader reader)
         {
-            _rator = new Enumerlator(reader);
+            this._rator = new Enumerlator(reader);
         }
 
-        public IEnumerator<T> GetEnumerator() => _rator;
+        public IEnumerator<T> GetEnumerator() => this._rator;
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-        class Enumerlator : IEnumerator<T>
+        private class Enumerlator : IEnumerator<T>
         {
-            delegate T Creatorlator(TypeConverter[] converters, string[] values);
+            private AdomdDataReader _reader;
 
-            AdomdDataReader _reader;
-            Creatorlator _creator;
-            TypeConverter[] _converters;
-            int[] _ornials;
+            private Creatorlator _creator;
 
-            public T Current { get; private set; }
-            object System.Collections.IEnumerator.Current => Current; 
+            private TypeConverter[] _converters;
+
+            private int[] _ornials;
 
             public Enumerlator(AdomdDataReader reader)
             {
-                _reader = reader;
-                init();
+                this._reader = reader;
+                this.init();
             }
+
+            private delegate T Creatorlator(TypeConverter[] converters, string[] values);
+
+            public T Current { get; private set; }
+
+            object System.Collections.IEnumerator.Current => this.Current;
 
             public bool MoveNext()
             {
-                if (!_reader.IsClosed && _reader.Read())
+                if (!this._reader.IsClosed && this._reader.Read())
                 {
-                    Current = get();
+                    this.Current = this.get();
                     return true;
                 }
 
-                else
-                    return false;
+                return false;
             }
 
-            T get()
+            public void Reset()
             {
-                var rawValues = new string[_reader.FieldCount];
-                
-                _ornials
-                    .For((v, i) => rawValues[i] = _reader[v] == null ? null : _reader[v].ToString());
-
-                return _creator(_converters, rawValues);
+                throw new NotImplementedException();
             }
 
-            void init()
+            public void Dispose() => this._reader.Dispose();
+
+            private T get()
+            {
+                var rawValues = new string[this._reader.FieldCount];
+
+                this._ornials
+                    .For((v, i) => rawValues[i] = this._reader[v] == null ? null : this._reader[v].ToString());
+
+                return this._creator(this._converters, rawValues);
+            }
+
+            private void init()
             {
                 var type = typeof(T);
-                var schema = _reader.GetSchemaTable();
+                var schema = this._reader.GetSchemaTable();
                 var columnOrds = schema.Rows
                     .Cast<DataRow>()
                     .Select(x => new
@@ -96,10 +108,10 @@ namespace Percolator.AnalysisServices
                     })
                     .OrderBy(x => x.Property.Attribute.MdxColumn);
 
-                _ornials = props.Select(x => x.Ordinal).ToArray();
+                this._ornials = props.Select(x => x.Ordinal).ToArray();
 
                 var bindingList = new Dictionary<ParameterExpression, MemberAssignment>();
-                _converters = new TypeConverter[props.Count()];
+                this._converters = new TypeConverter[props.Count()];
                 var stringArrayParam = Expression.Parameter(typeof(string[]), "values");
                 var converterArrayParam = Expression.Parameter(typeof(TypeConverter[]), "converters");
                 var converter = typeof(TypeConverter).GetMethod("ConvertFromString", new[] { typeof(string) });
@@ -119,21 +131,14 @@ namespace Percolator.AnalysisServices
                         Expression.Convert(methodExp, prop.PropertyType))
                         .Finally(bind => bindingList.Add(paramExp, bind));
 
-                    _converters[i] = typeConverter;
+                    this._converters[i] = typeConverter;
                 });
 
                 var newExp = Expression.New(typeof(T));
                 var memberInit = Expression.MemberInit(newExp, bindingList.Values.ToArray());
                 var lambda = Expression.Lambda<Creatorlator>(memberInit, new[] { converterArrayParam, stringArrayParam });
-                _creator = lambda.Compile();
+                this._creator = lambda.Compile();
             }
-
-            public void Reset()
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Dispose() =>_reader.Dispose();
         }
     }
 }

@@ -7,17 +7,19 @@
 
 namespace Percolator.AnalysisServices.Attributes
 {
-    public sealed class MapToAttribute : global::System.Attribute
+    using System;
+
+    public sealed class MapToAttribute : Attribute
     {
-        public string MdxColumn { get; set; }
         public MapToAttribute()
         {
-
         }
 
         public MapToAttribute(string mdxColumn)
         {
-            MdxColumn = mdxColumn;
+            this.MdxColumn = mdxColumn;
         }
+
+        public string MdxColumn { get; set; }
     }
 }

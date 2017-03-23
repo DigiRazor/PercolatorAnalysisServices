@@ -8,33 +8,23 @@
 namespace Percolator.AnalysisServices.Attributes
 {
     using System;
+
     /// <summary>
     /// Stores the information for an attribute or level.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
-    public sealed class TagAttribute : global::System.Attribute
+    public sealed class TagAttribute : Attribute
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Tag { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Ordinal { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public TagAttribute() { }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="tag"></param>
         public TagAttribute(string tag)
         {
-            Tag = tag;
-            Ordinal = 1;
+            this.Tag = tag;
+            this.Ordinal = 1;
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -42,8 +32,25 @@ namespace Percolator.AnalysisServices.Attributes
         /// <param name="ordinal"></param>
         public TagAttribute(string tag, int ordinal)
         {
-            Tag = tag;
-            Ordinal = ordinal;
+            this.Tag = tag;
+            this.Ordinal = ordinal;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public TagAttribute()
+        {
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Tag { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int Ordinal { get; set; }
     }
 }

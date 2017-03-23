@@ -5,36 +5,52 @@
  *  A Copy of the Liscence is included in the "AssemblyInfo.cs" file.
  */
 
-using System;
-using System.Linq.Expressions;
-
 namespace Percolator.AnalysisServices.Linq
 {
-    public enum Component { Where, From, SubCube, CreatedSet, CreatedMember }
+    using System;
+    using System.Linq.Expressions;
+
+    public enum Component
+    {
+        Where,
+        From,
+        SubCube,
+        CreatedSet,
+        CreatedMember
+    }
+
     public class MdxComponent
     {
-        public Component ComponentType { get; set; }
-        internal Expression Creator { get; set; }
-        public byte DeclarationOrder { get; set; }
-        public string Name { get; set; }
-        public byte? Axis { get; set; }
-
         public MdxComponent(Component componentType)
-            : this(componentType, null, null) { }
+            : this(componentType, null, null)
+        {
+        }
 
         public MdxComponent(Component componentType, string name)
-            : this(componentType, name, null) { }
+            : this(componentType, name, null)
+        {
+        }
 
         public MdxComponent(Component componentType, string name, Expression componentAssembler)
         {
-            ComponentType = componentType;
-            Creator = componentAssembler;
-            Name = name;
+            this.ComponentType = componentType;
+            this.Creator = componentAssembler;
+            this.Name = name;
         }
+
+        public Component ComponentType { get; set; }
+
+        public byte DeclarationOrder { get; set; }
+
+        public string Name { get; set; }
+
+        public byte? Axis { get; set; }
+
+        internal Expression Creator { get; set; }
 
         public MdxComponent AssembleComponent<T>(Expression<Func<T, object>> componentAssembler)
         {
-            Creator = componentAssembler;
+            this.Creator = componentAssembler;
             return this;
         }
     }
